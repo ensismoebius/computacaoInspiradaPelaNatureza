@@ -24,7 +24,7 @@ double fitnness1(double x) {
 }
 
 /**
- * Lesser the value, better the fitness
+ * Bigger the value, better the fitness
  */
 double fitnness2(double x) {
 	// This was made to better understand

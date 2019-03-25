@@ -1,7 +1,7 @@
 /**
  * @author André Furlan
  * @email ensismoebius@gmail.com
- * This hole project are under GPLv3, for
+ * This whole project are under GPLv3, for
  * more information read the license file
  */
 
@@ -66,7 +66,7 @@ double interactiveHillClimbing(int samplesAmount, int maxIterations, double targ
 
 /**
  * Stochastic hill climbing
- * Here the tFactor play a great hole!
+ * Here the tFactor play a great whole!
  *
  * The bigger tFactor are, the bigger must
  * be the difference between the values in

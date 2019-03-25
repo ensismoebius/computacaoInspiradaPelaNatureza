@@ -66,7 +66,7 @@ double interactiveHillClimbing(int samplesAmount, int maxIterations, double targ
 
 /**
  * Stochastic hill climbing
- * Here the tFactor play a great whole!
+ * Here the tFactor play a great hole!
  *
  * The bigger tFactor are, the bigger must
  * be the difference between the values in

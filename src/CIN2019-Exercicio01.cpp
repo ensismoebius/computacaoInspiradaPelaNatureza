@@ -6,7 +6,6 @@
  */
 
 #include <cmath>
-#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
@@ -437,13 +436,12 @@ void print2(char* arrPopulation, int populationSize, int subjectSize, int genera
 
 char* genesisFunction2(int populationSize, int subjectSize) {
 	int genesAmount = populationSize * subjectSize;
-	int i;
 
 	char* population = new char[genesAmount];
-
 	char* firstPop = convertFloatToIEEE754BinaryArray(0.0);
 	char* seconPop = convertFloatToIEEE754BinaryArray(1.0);
 
+	int i;
 	for (i = genesAmount - subjectSize - 1; i < genesAmount; i++) {
 		population[i] = firstPop[i];
 	}
@@ -503,141 +501,27 @@ double fitness1(char* arrSubject, int subjectSize) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-typedef union {
 
-	float f;
-	struct {
 
-		// Order is important.
-		// Here the members of the union data structure
-		// use the same memory (32 bits).
-		// The ordering is taken
-		// from the LSB to the MSB.
-		unsigned int mantissa :23;
-		unsigned int exponent :8;
-		unsigned int sign :1;
-
-	} raw;
-} myfloat;
-
-unsigned int* printBinary(int n, int i) {
-
-	unsigned int* res = new unsigned int[i];
-
-	int k;
-	for (k = i - 1; k >= 0; k--) {
-
-		if ((n >> k) & 1) {
-			res[i - 1 - k] = 1;
-		} else {
-			res[i - 1 - k] = 0;
-		}
-	}
-
-	return res;
-}
-
-// Function to convert real value
-// to IEEE floating point representation
-unsigned int* printIEEE(float value) {
-
-	unsigned int* res = new unsigned int[32];
-
-	// Instantiate the union
-	myfloat var;
-
-	// Get the real value
-	var.f = value;
-
-	// Prints the IEEE 754 representation
-	// of a float value (32 bits)
-
-	res[0] = (printBinary(var.raw.sign, 1))[0];
-
-	unsigned int* expo = printBinary(var.raw.exponent, 8);
-	for (int i = 0; i < 8; i++) {
-		res[i + 1] = expo[i];
-	}
-
-	unsigned int* mantissa = printBinary(var.raw.mantissa, 23);
-	for (int i = 0; i < 23; i++) {
-		res[i + 9] = mantissa[i];
-	}
-
-	delete[] expo;
-	delete[] mantissa;
-
-	expo = NULL;
-	mantissa = NULL;
-
-	return res;
-}
-
-// Function to convert a binary array
-// to the corresponding integer
-unsigned int convertToInt(unsigned int* arr, unsigned int low, unsigned int high) {
-	unsigned int f = 0, i;
-	for (i = high; i >= low; i--) {
-		f = f + arr[i] * pow(2, high - i);
-	}
-	return f;
-}
-// Driver Code
 int main() {
 
-	// Get the IEEE floating point representation
-	printf("IEEE 754 representation of %f is : \n", -2.25);
-	unsigned int* ieee = new unsigned int[32];
+	int subjectSize = 32;
+	int populationSize = 4;
+	double fitnessWeight = 8;
+	double diversityWeight = 2;
+	double crossoverRate = 0.7;
+	double mutationRate = 0.6;
 
-	ieee = printIEEE(-2.25);
+	Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness2, print2, genesisFunction2);
 
-	myfloat var;
+	while (pop.getGlobalScore() > 0) {
+		pop.printPopulation();
 
-	// Convert the least significant
-	// mantissa part (23 bits)
-	// to corresponding decimal integer
-	unsigned int f = convertToInt(ieee, 9, 31);
+		pop.evaluateAllSubjects();
+		pop.selectTheBestSubjects();
+		pop.createNextGeneration();
+	}
 
-	// Assign integer representation of mantissa
-	var.raw.mantissa = f;
-
-	// Convert the exponent part (8 bits)
-	// to a corresponding decimal integer
-	f = convertToInt(ieee, 1, 8);
-
-	// Assign integer representation
-	// of the exponent
-	var.raw.exponent = f;
-
-	// Assign sign bit
-	var.raw.sign = ieee[0];
-
-	printf("The float value of the given"
-			" IEEE-754 representation is : \n");
-	printf("%f", var.f);
-
+	pop.printPopulation();
 	return 0;
 }
-
-//	char* firstPop = convertFloatToIEEE754BinaryArray(5.24);
-//	float teste = convertIEEE754BinaryArrayToFloat(firstPop);
-
-//	int subjectSize = 32;
-//	int populationSize = 4;
-//	double fitnessWeight = 8;
-//	double diversityWeight = 2;
-//	double crossoverRate = 0.7;
-//	double mutationRate = 0.6;
-//
-//	Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness2, print2, genesisFunction2);
-//
-//	while (pop.getGlobalScore() > 0) {
-//		pop.printPopulation();
-//
-//		pop.evaluateAllSubjects();
-//		pop.selectTheBestSubjects();
-//		pop.createNextGeneration();
-//	}
-//
-//	pop.printPopulation();
-

@@ -5,12 +5,20 @@
  * more information read the license file
  */
 
+#include <cmath>
 #include <cstdlib>
+#include <iostream>
 #include <limits>
 #include <stdexcept>
 
+#include "lib/gaussianRandom.h"
+
 class Gen {
 private:
+	double globalScore = std::numeric_limits<double>::max();
+
+	int generation = 0;
+
 	int subjectSize;
 	int populationSize;
 
@@ -21,28 +29,23 @@ private:
 	double diversityWeight;
 
 	// TODO use an binary tree here
-	int* arrBreeders;
+	int* arrBreedersIndexes;
 	char* arrPopulation;
 
 	// TODO use an binary tree here
 	double* arrFitness;
 	double* arrRankingSpaceFitness;
 
-	const char targetSubject[12] = { 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0 };
+	double (*fitnessFunction)(char* arrSubject, int subjectSize);
+	void (*printFunction)(char* arrPopulation, int populationSize, int subjectSize, int generation, int globalScore);
 
 	static const unsigned int bestBreederIndex = 0;
 	static const unsigned int worseBreederIndex = 2;
 	static const unsigned int bestRankSpacedBreederIndex = 1;
 
-	int calculateIndividualFitness(char* arrSubject) {
-		int score = 0;
-		int index = this->subjectSize;
-
-		while (index--) {
-			score += arrSubject[index] == this->targetSubject[index] ? 1 : 0;
-		}
-
-		return score;
+	double calculateIndividualFitness(char* arrSubject) {
+		this->globalScore = (*this->fitnessFunction)(arrSubject, this->subjectSize);
+		return this->globalScore;
 	}
 
 	double calculateRankingSpaceFitness(int populationIndex, double diversity) {
@@ -97,7 +100,7 @@ private:
 	}
 
 	double createRandomNumber() {
-		return random() / (double) RAND_MAX;
+		return getUniformDistributedRandomPertubation() / (double) RAND_MAX;
 	}
 
 	char* createRandomMask(int size) {
@@ -136,7 +139,7 @@ private:
 			int newPopulationLocusIndex;
 
 			for (int i = 0; i < this->subjectSize; i++) {
-				bestBreederLocusIndex = this->arrBreeders[Gen::bestBreederIndex] * this->subjectSize + i;
+				bestBreederLocusIndex = this->arrBreedersIndexes[Gen::bestBreederIndex] * this->subjectSize + i;
 				newPopulationLocusIndex = (*newPopulationIndex) * this->subjectSize + i;
 				arrNewPopulation[newPopulationLocusIndex] = this->arrPopulation[bestBreederLocusIndex];
 			}
@@ -147,8 +150,8 @@ private:
 	void makeBestsHaveSex(int* newPopulationIndex, char* newPopulation) {
 		// another 12.5% of population are children from the best adapted
 		// and the best space ranked
-		int bestBreederIndex = this->arrBreeders[Gen::bestBreederIndex] * this->subjectSize;
-		int spaceRankedIndex = this->arrBreeders[Gen::bestRankSpacedBreederIndex] * this->subjectSize;
+		int bestBreederIndex = this->arrBreedersIndexes[Gen::bestBreederIndex] * this->subjectSize;
+		int spaceRankedIndex = this->arrBreedersIndexes[Gen::bestRankSpacedBreederIndex] * this->subjectSize;
 
 		// extract 1st and 2nd RNA from best adapted
 		char* rnaBest1 = extractRNA(this->arrPopulation + bestBreederIndex, 0);
@@ -170,39 +173,43 @@ private:
 
 	void makeWorseHaveSex(int* newPopulationIndex, char* newPopulation) {
 
-		int subjectIndex = 0;
+		int subjectIndex = -1;
 
 		// extract 1st and 2nd RNA from best adapted
-		int worseBreederIndex = this->arrBreeders[Gen::worseBreederIndex] * this->subjectSize;
+		int worseBreederIndex = this->arrBreedersIndexes[Gen::worseBreederIndex] * this->subjectSize;
 		char* rna11 = extractRNA(this->arrPopulation + worseBreederIndex, 0);
 		char* rna12 = extractRNA(this->arrPopulation + worseBreederIndex, 1);
 
 		while (*newPopulationIndex < this->populationSize) {
 
-			if (subjectIndex == this->arrBreeders[Gen::bestBreederIndex]) continue;
-			if (subjectIndex == this->arrBreeders[Gen::worseBreederIndex]) continue;
-			if (subjectIndex == this->arrBreeders[Gen::bestRankSpacedBreederIndex]) continue;
+			subjectIndex++;
+
+			if (subjectIndex == this->arrBreedersIndexes[Gen::bestBreederIndex]) continue;
+			if (subjectIndex == this->arrBreedersIndexes[Gen::worseBreederIndex]) continue;
+			if (subjectIndex == this->arrBreedersIndexes[Gen::bestRankSpacedBreederIndex]) continue;
 
 			// extract 2nd RNA from best space ranked
-			char* rna21 = extractRNA(this->arrPopulation + subjectIndex + this->subjectSize, 0);
-			char* rna22 = extractRNA(this->arrPopulation + subjectIndex + this->subjectSize, 1);
+			char* rna21 = extractRNA(this->arrPopulation + subjectIndex * this->subjectSize, 0);
+			char* rna22 = extractRNA(this->arrPopulation + subjectIndex * this->subjectSize, 1);
 
 			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), rna11, rna21);
 			(*newPopulationIndex)++;
 
+			if (*newPopulationIndex >= this->populationSize) break;
+
 			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), rna12, rna22);
 			(*newPopulationIndex)++;
-
-			subjectIndex++;
 		}
 	}
 
 public:
-	Gen(int subjectSize, int populationSize, double fitnessWeight, double diversityWeight, double crossoverRate, double mutationRate) {
+	Gen(int subjectSize, int populationSize, double fitnessWeight, double diversityWeight, double crossoverRate, double mutationRate, double (*fitnessFunction)(char*, int), void (*printFunction)(char* arrPopulation, int populationSize, int subjectSize, int generation, int globalScore)) {
 
-		if (populationSize < 4 || subjectSize < 2 || fitnessWeight <= 0 || diversityWeight <= 0 || crossoverRate > 1) {
-			throw std::invalid_argument("must subjectSize > 1 \n must populationSize > 3 \n must fitnessWeight > 0 \n must diversityWeight > 0\n must crossoverRate < 1\n");
+		if (populationSize < 4 || subjectSize < 2 || fitnessWeight <= 0 || diversityWeight <= 0 || crossoverRate > 1 || fitnessFunction == NULL) {
+			throw std::invalid_argument("must subjectSize > 1 \n must populationSize > 3 \n must fitnessWeight > 0 \n must diversityWeight > 0\n must crossoverRate < 1\n fitnessFunction != NULL \n ");
 		}
+
+		this->generation = 0;
 
 		this->mutationRate = mutationRate;
 		this->crossoverRate = crossoverRate;
@@ -211,12 +218,16 @@ public:
 		this->subjectSize = subjectSize;
 		this->populationSize = populationSize;
 
+		// The print and fitness function
+		this->printFunction = printFunction;
+		this->fitnessFunction = fitnessFunction;
+
 		// Set the normalized values
 		this->fitnessWeight = fitnessWeight / (fitnessWeight + diversityWeight);
 		this->diversityWeight = diversityWeight / (fitnessWeight + diversityWeight);
 
 		this->arrFitness = new double[populationSize];
-		this->arrBreeders = new int[populationSize / 2];
+		this->arrBreedersIndexes = new int[populationSize / 2];
 		this->arrRankingSpaceFitness = new double[populationSize];
 
 		this->arrPopulation = createPopulation();
@@ -225,6 +236,7 @@ public:
 	~Gen() {
 		delete[] this->arrFitness;
 		delete[] this->arrPopulation;
+		delete[] this->arrBreedersIndexes;
 		delete[] this->arrRankingSpaceFitness;
 	}
 
@@ -242,6 +254,14 @@ public:
 
 	void setSubjectSize(int subjectSize) {
 		this->subjectSize = subjectSize;
+	}
+
+	double getGlobalScore() const {
+		return globalScore;
+	}
+
+	void setGlobalScore(double score = 0) {
+		this->globalScore = score;
 	}
 
 	void evaluateAllSubjects() {
@@ -264,26 +284,27 @@ public:
 		// calculating the diversity and raking space fitness
 		index++;
 		for (; index < this->populationSize; index++) {
-			diversity = 1.0 / this->populationSize / this->arrFitness[index];
+			diversity = fabs((1.0 / this->populationSize) - this->arrFitness[index]);
 			this->arrRankingSpaceFitness[index] = calculateRankingSpaceFitness(index, diversity);
 		}
 	}
 
 	void selectTheBestSubjects() {
 
+		// IMPORTANT the lower the globalScore the better
 		int index = 0;
 
-		double bestFitness = 0;
-		double worseFitness = std::numeric_limits<double>::max();
-		double bestRankingSpaceFitness = 0;
+		double worseFitness = 0;
+		double bestFitness = std::numeric_limits<double>::max();
+		double bestRankingSpaceFitness = std::numeric_limits<double>::max();
 
 		int amountOfSelectedSubjects = 0;
 
 		// finding the best adapted
 		for (index = 0; index < this->populationSize; index++) {
-			if (this->arrFitness[index] > bestFitness) {
+			if (this->arrFitness[index] < bestFitness) {
 				bestFitness = this->arrFitness[index];
-				this->arrBreeders[Gen::bestBreederIndex] = index;
+				this->arrBreedersIndexes[Gen::bestBreederIndex] = index;
 			}
 		}
 		amountOfSelectedSubjects++;
@@ -291,11 +312,11 @@ public:
 		// finding the best ranking spaced
 		for (index = 0; index < this->populationSize; index++) {
 			// We want another subject then the best adapted
-			if (index == this->arrBreeders[Gen::bestBreederIndex]) continue;
+			if (index == this->arrBreedersIndexes[Gen::bestBreederIndex]) continue;
 
-			if (this->arrRankingSpaceFitness[index] > bestRankingSpaceFitness) {
+			if (this->arrRankingSpaceFitness[index] < bestRankingSpaceFitness) {
 				bestRankingSpaceFitness = this->arrRankingSpaceFitness[index];
-				this->arrBreeders[Gen::bestRankSpacedBreederIndex] = index;
+				this->arrBreedersIndexes[Gen::bestRankSpacedBreederIndex] = index;
 			}
 		}
 		amountOfSelectedSubjects += abs(bestRankingSpaceFitness) > 0 ? 1 : 0;
@@ -303,13 +324,13 @@ public:
 		// finding the worse
 		for (index = 0; index < this->populationSize; index++) {
 			// We want another subject then the others selected
-			if (this->arrBreeders[Gen::bestBreederIndex] == index) continue;
-			if (this->arrBreeders[Gen::bestRankSpacedBreederIndex] == index) continue;
+			if (this->arrBreedersIndexes[Gen::bestBreederIndex] == index) continue;
+			if (this->arrBreedersIndexes[Gen::bestRankSpacedBreederIndex] == index) continue;
 
 			// finding the worst adapted
-			if (this->arrFitness[index] < worseFitness) {
+			if (this->arrFitness[index] > worseFitness) {
 				worseFitness = this->arrFitness[index];
-				this->arrBreeders[Gen::worseBreederIndex] = index;
+				this->arrBreedersIndexes[Gen::worseBreederIndex] = index;
 			}
 		}
 		amountOfSelectedSubjects += worseFitness != std::numeric_limits<double>::max() ? 1 : 0;
@@ -317,26 +338,20 @@ public:
 		if (amountOfSelectedSubjects >= this->populationSize / 2) return;
 
 		// selecting another ones...
-		double worseFitnessValue = this->arrFitness[this->arrBreeders[Gen::worseBreederIndex]];
 		for (index = 0; index < this->populationSize; index++) {
 
 			// We want another subject then the others selected
-			if (this->arrBreeders[Gen::bestBreederIndex] == index) continue;
-			if (this->arrBreeders[Gen::bestRankSpacedBreederIndex] == index) continue;
+			if (this->arrBreedersIndexes[Gen::bestBreederIndex] == index) continue;
+			if (this->arrBreedersIndexes[Gen::worseBreederIndex] == index) continue;
+			if (this->arrBreedersIndexes[Gen::bestRankSpacedBreederIndex] == index) continue;
 
-			// we catch any other that is better than the worse
-			if (this->arrFitness[index] < worseFitnessValue) continue;
-
-			this->arrBreeders[amountOfSelectedSubjects] = index;
+			this->arrBreedersIndexes[amountOfSelectedSubjects] = index;
 			amountOfSelectedSubjects++;
-
-			if (amountOfSelectedSubjects == this->populationSize / 2) {
-				break;
-			}
+			if (amountOfSelectedSubjects == this->populationSize / 2) break;
 		}
 	}
 
-	void reproduce() {
+	void createNextGeneration() {
 
 		int newPopulationIndex = 0;
 		char* arrNewPopulation = new char[this->populationSize * this->subjectSize];
@@ -352,19 +367,64 @@ public:
 		// another 50% of population are children from worse adapted
 		makeWorseHaveSex(&newPopulationIndex, arrNewPopulation);
 
+		this->generation++;
+		delete[] this->arrPopulation;
+		this->arrPopulation = arrNewPopulation;
+	}
+
+	void printPopulation() {
+		(*this->printFunction)(this->arrPopulation, this->populationSize, this->subjectSize, this->generation, this->globalScore);
 	}
 };
 
+void print(char* arrPopulation, int populationSize, int subjectSize, int generation, int score) {
+	std::cout << "Generation: " << generation << " Score:" << score << std::endl;
+	if(score > 0) return;
+
+	for (int i = 0; i < populationSize; i++) {
+		for (int j = 0; j < subjectSize; j++) {
+			std::cout << (int) arrPopulation[(i * subjectSize) + j] << ",";
+			if ((j + 1) % 3 == 0) std::cout << std::endl;
+		}
+		std::cout << std::endl;
+	}
+}
+
+double fitness(char* arrSubject, int subjectSize) {
+	double score = 0;
+	int index = subjectSize;
+
+	// represents a 3x4 matrix
+	//	0, 1, 0,
+	//	0, 1, 0,
+	//	0, 1, 0,
+	//	0, 1, 0,
+	const char targetSubject[12] = { 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0 };
+
+	while (index--) {
+		score += arrSubject[index] != targetSubject[index] ? 1 : 0;
+	}
+	return score;
+}
 int main() {
 
-	// represents a matrix of 3x4
-	//	0, 1, 0,
-	//	0, 1, 0,
-	//	0, 1, 0,
-	//	0, 1, 0,
-	Gen pop = Gen(12, 4, 8, 2, 0.8, 0.001);
-	pop.evaluateAllSubjects();
-	pop.selectTheBestSubjects();
-	pop.reproduce();
+	int subjectSize = 12;
+	int populationSize = 4;
+	double fitnessWeight = 8;
+	double diversityWeight = 2;
+	double crossoverRate = 0.1;
+	double mutationRate = 0.1;
+
+	Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness, print);
+	pop.printPopulation();
+
+
+	while (pop.getGlobalScore() > 0) {
+		pop.evaluateAllSubjects();
+		pop.selectTheBestSubjects();
+		pop.printPopulation();
+
+		pop.createNextGeneration();
+	}
 	return 0;
 }

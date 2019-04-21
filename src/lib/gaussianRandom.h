@@ -9,5 +9,6 @@
 #define LIB_GAUSSIANRANDOM_H_
 
 double getGaussionRandomPertubation();
+int getUniformDistributedRandomPertubation();
 
 #endif /* LIB_GAUSSIANRANDOM_H_ */

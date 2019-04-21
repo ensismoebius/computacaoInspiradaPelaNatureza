@@ -9,10 +9,20 @@
 
 #include <random>
 
+// generate random number from hardware
 std::default_random_engine generator;
-std::normal_distribution<double> distribution(0.0, 1.0);
+
+// the type of random distributions
+std::normal_distribution<double> normalDistribution(0.0, 1.0);
+std::uniform_int_distribution<int> uniformDistribution(0, RAND_MAX);
+
+// seed generator
+std::mt19937 seed;
 
 double getGaussionRandomPertubation() {
-	return distribution(generator) / 2.0;
+	return normalDistribution(generator) / 2.0;
 }
 
+int getUniformDistributedRandomPertubation() {
+	return uniformDistribution(seed);
+}

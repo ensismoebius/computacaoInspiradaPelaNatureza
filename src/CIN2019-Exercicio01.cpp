@@ -12,6 +12,7 @@
 #include <stdexcept>
 
 #include "lib/gaussianRandom.h"
+#include "lib/variables.h"
 
 class Gen {
 private:
@@ -44,8 +45,9 @@ private:
 	static const unsigned int bestRankSpacedBreederIndex = 1;
 
 	double calculateIndividualFitness(char* arrSubject) {
-		this->globalScore = (*this->fitnessFunction)(arrSubject, this->subjectSize);
-		return this->globalScore;
+		double score = (*this->fitnessFunction)(arrSubject, this->subjectSize);
+		this->globalScore += score;
+		return score;
 	}
 
 	double calculateRankingSpaceFitness(int populationIndex, double diversity) {
@@ -370,6 +372,7 @@ public:
 		this->generation++;
 		delete[] this->arrPopulation;
 		this->arrPopulation = arrNewPopulation;
+		this->globalScore = 0;
 	}
 
 	void printPopulation() {
@@ -379,15 +382,28 @@ public:
 
 void print(char* arrPopulation, int populationSize, int subjectSize, int generation, int score) {
 	std::cout << "Generation: " << generation << " Score:" << score << std::endl;
-	if(score > 0) return;
+	if (score > 0) return;
 
-	for (int i = 0; i < populationSize; i++) {
-		for (int j = 0; j < subjectSize; j++) {
-			std::cout << (int) arrPopulation[(i * subjectSize) + j] << ",";
-			if ((j + 1) % 3 == 0) std::cout << std::endl;
-		}
-		std::cout << std::endl;
-	}
+//	for (int i = 0; i < populationSize; i++) {
+//		for (int j = 0; j < subjectSize; j++) {
+//			std::cout << (int) arrPopulation[(i * subjectSize) + j] << ",";
+//			if ((j + 1) % 3 == 0) std::cout << std::endl;
+//		}
+//		std::cout << std::endl;
+//	}
+}
+
+double fitness2(char* arrSubject, int subjectSize) {
+	float x = convertIEEE754BinaryArrayToFloat(arrSubject);
+
+	double p1 = -2 * pow((x - 0.1) / 0.9, 2);
+	double p2 = pow(sin(5 * M_PI * x), 6);
+	double final = (double) pow(2, p1) * p2;
+
+	if (final <= 0) return std::numeric_limits<float>::max();
+
+	return std::numeric_limits<double>::max() - final;
+
 }
 
 double fitness(char* arrSubject, int subjectSize) {
@@ -399,7 +415,7 @@ double fitness(char* arrSubject, int subjectSize) {
 	//	0, 1, 0,
 	//	0, 1, 0,
 	//	0, 1, 0,
-	const char targetSubject[12] = { 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0 };
+	const char targetSubject[12] = { 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1 };
 
 	while (index--) {
 		score += arrSubject[index] != targetSubject[index] ? 1 : 0;
@@ -408,16 +424,15 @@ double fitness(char* arrSubject, int subjectSize) {
 }
 int main() {
 
-	int subjectSize = 12;
+	int subjectSize = 32;
 	int populationSize = 4;
 	double fitnessWeight = 8;
 	double diversityWeight = 2;
 	double crossoverRate = 0.1;
 	double mutationRate = 0.1;
 
-	Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness, print);
+	Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness2, print);
 	pop.printPopulation();
-
 
 	while (pop.getGlobalScore() > 0) {
 		pop.evaluateAllSubjects();
@@ -426,5 +441,7 @@ int main() {
 
 		pop.createNextGeneration();
 	}
+
 	return 0;
 }
+

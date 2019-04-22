@@ -16,7 +16,7 @@
 
 class Gen {
 private:
-	double globalScore;
+	double bestScore;
 
 	int generation = 0;
 
@@ -30,23 +30,34 @@ private:
 	double diversityWeight;
 
 	// TODO use an binary tree here
-	int* arrBreedersIndexes;
 	char* arrPopulation;
+	char* arrNewPopulation;
+	int* arrBreedersIndexes;
 
 	// TODO use an binary tree here
 	double* arrFitness;
 	double* arrRankingSpaceFitness;
 
+	char* rnaBest1;
+	char* rnaBest2;
+	char* rnaSpcR1;
+	char* rnaSpcR2;
+
+	char* anyoneRna1;
+	char* anyoneRna2;
+	char* worseBreederRna1;
+	char* worseBreederRna2;
+
 	double (*fitnessFunction)(char* arrSubject, int subjectSize);
-	char* (*genesisFunction)(int populationSize, int subjectSize);
-	void (*printFunction)(char* arrPopulation, int populationSize, int subjectSize, int generation, double globalScore);
+	void (*genesisFunction)(char* arrPopulation, int populationSize, int subjectSize);
+	void (*printFunction)(char* arrPopulation, int populationSize, int subjectSize, int generation, double bestScore);
 
 	static const unsigned int bestBreederIndex = 0;
 	static const unsigned int worseBreederIndex = 2;
 	static const unsigned int bestRankSpacedBreederIndex = 1;
 
-	char* createPopulation() {
-		return (*this->genesisFunction)(this->populationSize, this->subjectSize);
+	void createPopulation(char* arrPopulation) {
+		(*this->genesisFunction)(arrPopulation, this->populationSize, this->subjectSize);
 	}
 
 	double calculateIndividualFitness(char* arrSubject) {
@@ -55,6 +66,11 @@ private:
 
 	double calculateRankingSpaceFitness(int populationIndex, double diversity) {
 		return diversity * this->diversityWeight + this->arrFitness[populationIndex] + this->fitnessWeight;
+	}
+
+	void copyOneArrayToAnother(char* arrSource, char* arrDestiny, int size) {
+		while (size--)
+			arrDestiny[size] = arrSource[size];
 	}
 
 	void doCrossOver(char* rna1, char* rna2) {
@@ -67,6 +83,8 @@ private:
 				rna2[i] = tmp;
 			}
 		}
+
+		delete[] mask;
 	}
 
 	void mutate(char* rna1, char* rna2) {
@@ -81,19 +99,16 @@ private:
 		}
 	}
 
-	char* extractRNA(char* subject, char chainNumber) {
+	void extractRNA(char* arrRna, char* subject, char chainNumber) {
 		if (chainNumber < 0 || chainNumber > 1) {
 			throw std::invalid_argument("chainNumber must be 0 or 1");
 		}
 
 		int rnaIndex = 0;
-		char* rna = new char[this->subjectSize / 2];
 
 		for (int i = chainNumber; i < this->subjectSize; i += 2) {
-			rna[rnaIndex++] = subject[i];
+			arrRna[rnaIndex++] = subject[i];
 		}
-
-		return rna;
 	}
 
 	double createRandomNumber() {
@@ -151,31 +166,21 @@ private:
 		int spaceRankedIndex = this->arrBreedersIndexes[Gen::bestRankSpacedBreederIndex] * this->subjectSize;
 
 		// extract 1st and 2nd RNA from best adapted
-		char* rnaBest1 = extractRNA(this->arrPopulation + bestBreederIndex, 0);
-		char* rnaBest2 = extractRNA(this->arrPopulation + bestBreederIndex, 1);
+		extractRNA(this->rnaBest1, this->arrPopulation + bestBreederIndex, 0);
+		extractRNA(this->rnaBest2, this->arrPopulation + bestBreederIndex, 1);
 
 		// extract 2nd RNA from best space ranked
-		char* rnaSpcR1 = extractRNA(this->arrPopulation + spaceRankedIndex, 0);
-		char* rnaScpR2 = extractRNA(this->arrPopulation + spaceRankedIndex, 1);
+		extractRNA(this->rnaSpcR1, this->arrPopulation + spaceRankedIndex, 0);
+		extractRNA(this->rnaSpcR2, this->arrPopulation + spaceRankedIndex, 1);
 
 		while (*newPopulationIndex <= this->populationSize / 4.0) {
 
 			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), rnaBest1, rnaSpcR1);
 			(*newPopulationIndex)++;
 
-			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), rnaBest2, rnaScpR2);
+			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), rnaBest2, rnaSpcR2);
 			(*newPopulationIndex)++;
 		}
-
-		delete[] rnaBest1;
-		delete[] rnaBest2;
-		delete[] rnaSpcR1;
-		delete[] rnaScpR2;
-
-		rnaBest1 = NULL;
-		rnaBest2 = NULL;
-		rnaSpcR1 = NULL;
-		rnaScpR2 = NULL;
 	}
 
 	void makeWorseHaveSex(int* newPopulationIndex, char* newPopulation) {
@@ -184,8 +189,8 @@ private:
 
 		// extract 1st and 2nd RNA from best adapted
 		int worseBreederIndex = this->arrBreedersIndexes[Gen::worseBreederIndex] * this->subjectSize;
-		char* rna11 = extractRNA(this->arrPopulation + worseBreederIndex, 0);
-		char* rna12 = extractRNA(this->arrPopulation + worseBreederIndex, 1);
+		extractRNA(this->worseBreederRna1, this->arrPopulation + worseBreederIndex, 0);
+		extractRNA(this->worseBreederRna2, this->arrPopulation + worseBreederIndex, 1);
 
 		while (*newPopulationIndex < this->populationSize) {
 
@@ -196,21 +201,23 @@ private:
 			if (subjectIndex == this->arrBreedersIndexes[Gen::bestRankSpacedBreederIndex]) continue;
 
 			// extract 2nd RNA from best space ranked
-			char* rna21 = extractRNA(this->arrPopulation + subjectIndex * this->subjectSize, 0);
-			char* rna22 = extractRNA(this->arrPopulation + subjectIndex * this->subjectSize, 1);
+			extractRNA(this->anyoneRna1, this->arrPopulation + subjectIndex * this->subjectSize, 0);
+			extractRNA(this->anyoneRna2, this->arrPopulation + subjectIndex * this->subjectSize, 1);
 
-			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), rna11, rna21);
+			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), worseBreederRna1, anyoneRna1);
 			(*newPopulationIndex)++;
 
 			if (*newPopulationIndex >= this->populationSize) break;
 
-			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), rna12, rna22);
+			createNewSubject(newPopulation + ((*newPopulationIndex) * this->subjectSize), worseBreederRna2, anyoneRna2);
 			(*newPopulationIndex)++;
+
 		}
+
 	}
 
 public:
-	Gen(int subjectSize, int populationSize, double fitnessWeight, double diversityWeight, double crossoverRate, double mutationRate, double (*fitnessFunction)(char*, int), void (*printFunction)(char* arrPopulation, int populationSize, int subjectSize, int generation, double globalScore), char* (*genesisFunction)(int populationSize, int subjectSize)) {
+	Gen(int subjectSize, int populationSize, double fitnessWeight, double diversityWeight, double crossoverRate, double mutationRate, double (*fitnessFunction)(char*, int), void (*printFunction)(char* arrPopulation, int populationSize, int subjectSize, int generation, double bestScore), void (*genesisFunction)(char* arrPopulation, int populationSize, int subjectSize)) {
 
 		if (populationSize < 4 || subjectSize < 2 || fitnessWeight <= 0 || diversityWeight <= 0 || crossoverRate > 1 || fitnessFunction == NULL) {
 			throw std::invalid_argument("must subjectSize > 1 \n must populationSize > 3 \n must fitnessWeight > 0 \n must diversityWeight > 0\n must crossoverRate < 1\n fitnessFunction != NULL \n ");
@@ -238,16 +245,56 @@ public:
 		this->arrBreedersIndexes = new int[populationSize / 2];
 		this->arrRankingSpaceFitness = new double[populationSize];
 
-		this->globalScore = std::numeric_limits<double>::max();
+		// Used to store the RNA at time of reproduction
+		this->rnaBest1 = new char[this->subjectSize / 2];
+		this->rnaBest2 = new char[this->subjectSize / 2];
+		this->rnaSpcR1 = new char[this->subjectSize / 2];
+		this->rnaSpcR2 = new char[this->subjectSize / 2];
+		this->anyoneRna1 = new char[this->subjectSize / 2];
+		this->anyoneRna2 = new char[this->subjectSize / 2];
+		this->worseBreederRna1 = new char[this->subjectSize / 2];
+		this->worseBreederRna2 = new char[this->subjectSize / 2];
 
-		this->arrPopulation = createPopulation();
+		this->bestScore = std::numeric_limits<double>::max();
+
+		this->arrPopulation = new char[this->populationSize * this->subjectSize];
+		this->arrNewPopulation = new char[this->populationSize * this->subjectSize];
+		this->createPopulation(this->arrPopulation);
 	}
 
 	~Gen() {
+
+		delete[] this->anyoneRna1;
+		delete[] this->anyoneRna2;
+		this->anyoneRna1 = NULL;
+		this->anyoneRna2 = NULL;
+
+		delete[] this->worseBreederRna1;
+		delete[] this->worseBreederRna2;
+		this->worseBreederRna1 = NULL;
+		this->worseBreederRna2 = NULL;
+
+		delete[] this->rnaBest1;
+		delete[] this->rnaBest2;
+		delete[] this->rnaSpcR1;
+		delete[] this->rnaSpcR2;
+
+		this->rnaBest1 = NULL;
+		this->rnaBest2 = NULL;
+		this->rnaSpcR1 = NULL;
+		this->rnaSpcR2 = NULL;
+
 		delete[] this->arrFitness;
 		delete[] this->arrPopulation;
+		delete[] this->arrNewPopulation;
 		delete[] this->arrBreedersIndexes;
 		delete[] this->arrRankingSpaceFitness;
+
+		this->arrFitness = NULL;
+		this->arrPopulation = NULL;
+		this->arrNewPopulation = NULL;
+		this->arrBreedersIndexes = NULL;
+		this->arrRankingSpaceFitness = NULL;
 	}
 
 	int getPopulationSize() const {
@@ -266,29 +313,33 @@ public:
 		this->subjectSize = subjectSize;
 	}
 
-	double getGlobalScore() const {
-		return globalScore;
+	double getBestScore() const {
+		return bestScore;
 	}
 
 	void setGlobalScore(double score = 0) {
-		this->globalScore = score;
+		this->bestScore = score;
 	}
 
 	void evaluateAllSubjects() {
 
 		int index = 0;
 		double diversity;
-		double sumOfAllScores = 0;
+		double sumOfScores = 0;
+		double tempScore = 0;
 		char sumReachesInfinty = 0;
 
 		// evaluating all subjects
 		for (; index < this->populationSize; index++) {
-			sumOfAllScores += this->arrFitness[index] = this->calculateIndividualFitness(this->arrPopulation + (index * this->subjectSize));
+			tempScore = this->arrFitness[index] = this->calculateIndividualFitness(this->arrPopulation + (index * this->subjectSize));
+
+			this->bestScore = this->bestScore > tempScore ? tempScore : this->bestScore;
+			sumOfScores += tempScore;
 		}
 
 		// setting the global score, ideally, in most cases, it has to reach zero
-		if (sumOfAllScores == std::numeric_limits<double>::infinity()) {
-			this->globalScore = sumOfAllScores = std::numeric_limits<double>::max();
+		if (sumOfScores == std::numeric_limits<double>::infinity()) {
+			sumOfScores = std::numeric_limits<double>::max();
 			sumReachesInfinty = 1;
 		}
 
@@ -309,7 +360,7 @@ public:
 			}
 		} else {
 			for (; index >= 0; index--) {
-				this->arrFitness[index] /= sumOfAllScores;
+				this->arrFitness[index] /= sumOfScores;
 			}
 		}
 
@@ -384,142 +435,173 @@ public:
 	}
 
 	void createNextGeneration() {
-
+		// This variable are use to control the number of subjects
 		int newPopulationIndex = 0;
-		char* arrNewPopulation = new char[this->populationSize * this->subjectSize];
 
 		// 12.5% of population are copies of the best adapted
 		// we must maintain breedersIndex at 0
-		createBestAdaptedCopies(&newPopulationIndex, arrNewPopulation);
+		createBestAdaptedCopies(&newPopulationIndex, this->arrNewPopulation);
 
 		// another 12.5% of population are children from the best adapted
 		// and the best space ranked
-		makeBestsHaveSex(&newPopulationIndex, arrNewPopulation);
+		makeBestsHaveSex(&newPopulationIndex, this->arrNewPopulation);
 
 		// another 50% of population are children from worse adapted
-		makeWorseHaveSex(&newPopulationIndex, arrNewPopulation);
+		makeWorseHaveSex(&newPopulationIndex, this->arrNewPopulation);
 
+		// Copy new population to regular population
+		this->copyOneArrayToAnother(this->arrNewPopulation, this->arrPopulation, populationSize * subjectSize);
+
+		// advances one generation
 		this->generation++;
-		delete[] this->arrPopulation;
-		this->arrPopulation = arrNewPopulation;
 	}
 
 	void printPopulation() {
-		(*this->printFunction)(this->arrPopulation, this->populationSize, this->subjectSize, this->generation, this->globalScore);
+		(*this->printFunction)(this->arrPopulation, this->populationSize, this->subjectSize, this->generation, this->bestScore);
 	}
 };
 
-void print1(char* arrPopulation, int populationSize, int subjectSize, int generation, double score) {
-	std::cout << "Generation: " << generation << " Score:" << score << std::endl;
-	if (score > 0) return;
-
-	for (int i = 0; i < populationSize; i++) {
-		for (int j = 0; j < subjectSize; j++) {
-			std::cout << (int) arrPopulation[(i * subjectSize) + j] << ",";
-			if ((j + 1) % 3 == 0) std::cout << std::endl;
-		}
-		std::cout << std::endl;
-	}
-}
+//void print1(char* arrPopulation, int populationSize, int subjectSize, int generation, double score) {
+//	std::cout << "Generation: " << generation << " Score:" << score << std::endl;
+//	if (score > 0) return;
+//
+//	for (int i = 0; i < populationSize; i++) {
+//		for (int j = 0; j < subjectSize; j++) {
+//			std::cout << (int) arrPopulation[(i * subjectSize) + j] << ",";
+//			if ((j + 1) % 3 == 0) std::cout << std::endl;
+//		}
+//		std::cout << std::endl;
+//	}
+//}
+//void genesisFunction1(char* arrPopulation, int populationSize, int subjectSize) {
+//	int genesAmount = populationSize * subjectSize;
+//	char* population = new char[genesAmount];
+//
+//	// initializes the population
+//	while (genesAmount--) {
+//		population[genesAmount] = random() > RAND_MAX / 2 ? 1 : 0;
+//	}
+//
+//	return population;
+//}
+//
+//// subjectSize must be 12
+//double fitness1(char* arrSubject, int subjectSize) {
+//	double score = 0;
+//	int index = subjectSize;
+//
+//	const char targetSubject[12] = { 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1 };
+//
+//	while (index--) {
+//		score += arrSubject[index] != targetSubject[index] ? 1 : 0;
+//	}
+//	return score;
+//}
 
 void print2(char* arrPopulation, int populationSize, int subjectSize, int generation, double score) {
 	std::cout << "Generation: " << generation << " Score:" << score << std::endl;
-	//if (score > 0) return;
+	char* subject = new char[32];
 
 	for (int i = 0; i < populationSize; i++) {
 		for (int j = 0; j < subjectSize; j++) {
-			std::cout << (int) arrPopulation[(i * subjectSize) + j] << ",";
+			subject[j] = arrPopulation[(i * subjectSize) + j];
 		}
-		std::cout << std::endl;
+		std::cout << convertIEEE754BinaryArrayToFloat(subject) << std::endl;
 	}
 }
 
-char* genesisFunction2(int populationSize, int subjectSize) {
+void genesisFunction2(char* arrPopulation, int populationSize, int subjectSize) {
 	int genesAmount = populationSize * subjectSize;
 
-	char* population = new char[genesAmount];
-	char* firstPop = convertFloatToIEEE754BinaryArray(0.0);
-	char* seconPop = convertFloatToIEEE754BinaryArray(1.0);
-
-	int i;
-	for (i = genesAmount - subjectSize - 1; i < genesAmount; i++) {
-		population[i] = firstPop[i];
-	}
-
-	genesAmount = genesAmount - subjectSize;
-
-	for (i = genesAmount - subjectSize - 1; i < genesAmount; i++) {
-		population[i] = seconPop[i];
-	}
-
-	genesAmount = genesAmount - subjectSize;
-
 	while (genesAmount--) {
-		population[genesAmount] = 0;
+		arrPopulation[genesAmount] = 0;
 	}
-
-	return population;
 }
 
 //subject size must be 32
 double fitness2(char* arrSubject, int subjectSize) {
 	float x = convertIEEE754BinaryArrayToFloat(arrSubject);
 
-	double p1 = -2 * pow((x - 0.1) / 0.9, 2);
-	double p2 = pow(sin(5 * M_PI * x), 6);
-	double final = (double) pow(2, p1) * p2;
+	if (x > 1) return 5.0;
+	if (x < 0) return 5.0;
 
-	if (final <= 0) return std::numeric_limits<double>::max();
+	std::cout << x << std::endl;
 
-	return std::numeric_limits<double>::max() - final;
+	double p1 = -2.0 * pow((x - 0.1) / 0.9, 2.0);
+	double p2 = pow(sin(5.0 * M_PI * x), 6.0);
+	double final = (double) pow(2.0, p1) * p2;
 
+	return 5.0 - final;
 }
 
-char* genesisFunction1(int populationSize, int subjectSize) {
-	int genesAmount = populationSize * subjectSize;
-	char* population = new char[genesAmount];
+//subject size must be 32
+double fitness3(char* arrSubject, int subjectSize) {
+	float x = convertIEEE754BinaryArrayToFloat(arrSubject);
 
-	// initializes the population
-	while (genesAmount--) {
-		population[genesAmount] = random() > RAND_MAX / 2 ? 1 : 0;
+	if (x > 0) return 50.0;
+	if (x < -10) return 50.0;
+
+	double final = pow(-x, 2) * sin(x);
+
+	return 50.0 - final;
+}
+
+//subject size must be 64
+double fitness4(char* arrSubject, int subjectSize) {
+
+	float x = convertIEEE754BinaryArrayToFloat(arrSubject);
+	float y = convertIEEE754BinaryArrayToFloat(arrSubject + (subjectSize / 2));
+
+	if (x > 5) return 50.0;
+	if (x < -5) return 50.0;
+
+	if (y > 5) return 50.0;
+	if (y < -5) return 50.0;
+
+	double final = pow((1 - x), 2) + 100 * pow((y - pow(x, 2)), 2);
+
+	return final;
+}
+
+void print4(char* arrPopulation, int populationSize, int subjectSize, int generation, double score) {
+	std::cout << "Generation: " << generation << " Score:" << score << std::endl;
+	char* subject = new char[32];
+	int j;
+
+	for (int i = 0; i < populationSize; i++) {
+		for (j = 0; j < subjectSize / 2; j++) {
+			subject[j] = arrPopulation[(i * subjectSize) + j];
+		}
+		std::cout << convertIEEE754BinaryArrayToFloat(subject) << std::endl;
+
+		for (; j < subjectSize; j++) {
+			subject[j - (subjectSize / 2)] = arrPopulation[(i * subjectSize) + j];
+		}
+		std::cout << convertIEEE754BinaryArrayToFloat(subject) << std::endl;
 	}
 
-	return population;
+	delete[] subject;
+	subject = NULL;
 }
-
-// subjectSize must be 12
-double fitness1(char* arrSubject, int subjectSize) {
-	double score = 0;
-	int index = subjectSize;
-
-	const char targetSubject[12] = { 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1 };
-
-	while (index--) {
-		score += arrSubject[index] != targetSubject[index] ? 1 : 0;
-	}
-	return score;
-}
-
-//////////////////////////////////////////////////////////////////////////////////
-
 
 int main() {
 
-	int subjectSize = 32;
+	int subjectSize = 64;
 	int populationSize = 4;
 	double fitnessWeight = 8;
 	double diversityWeight = 2;
-	double crossoverRate = 0.7;
-	double mutationRate = 0.6;
+	double crossoverRate = 0.4;
+	double mutationRate = 0.1;
 
-	Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness2, print2, genesisFunction2);
+	Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness4, print4, genesisFunction2);
 
-	while (pop.getGlobalScore() > 0) {
-		pop.printPopulation();
-
+	int counter = 0;
+	while (pop.getBestScore() > 0 && counter < 100000) {
+//		pop.printPopulation();
 		pop.evaluateAllSubjects();
 		pop.selectTheBestSubjects();
 		pop.createNextGeneration();
+		counter++;
 	}
 
 	pop.printPopulation();

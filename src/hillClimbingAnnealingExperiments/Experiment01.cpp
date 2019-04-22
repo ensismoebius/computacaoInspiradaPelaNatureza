@@ -25,7 +25,7 @@ namespace hillClimbingAnnealingExperiments {
 		static void perform(unsigned int iterations) {
 			double results = hillClimbing(iterations, 0, fitnness);
 			std::cout << "Result for abs(pow(x, 3.0) + x + 3) with " << iterations;
-			std::cout << " and target value 0 using Hill Climbing: " << results;
+			std::cout << " and target value 0 using Hill Climbing: " << results << std::endl << std::endl;
 		}
 	};
 }

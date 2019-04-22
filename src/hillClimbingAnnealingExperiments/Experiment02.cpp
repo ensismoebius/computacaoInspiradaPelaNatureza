@@ -29,7 +29,7 @@ namespace hillClimbingAnnealingExperiments {
 		static void perform(unsigned int iterations) {
 			double results = stochasticHillClimbing(iterations, 0, fitnness);
 			std::cout << "Result for pow(2, -2 * pow((x - 0.1) / 0.9, 2)) * pow(sin(5 * M_PI * x), 6) with " << iterations;
-			std::cout << " and target value 0 using Stochastic Hill Climbing: " << results;
+			std::cout << " and target value 0 using Stochastic Hill Climbing: " << results << std::endl << std::endl;
 		}
 
 	};

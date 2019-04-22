@@ -72,7 +72,7 @@ public:
 		}
 
 		// phenotype block
-		std::cout << "And his phenotype is ";
+		std::cout << " And his phenotype is:" << std::endl;
 		for (int j = 0; j < subjectSize; j++) {
 			std::cout << (int) bestSubject[j] << ",";
 			if ((j + 1) % 3 == 0) std::cout << std::endl;

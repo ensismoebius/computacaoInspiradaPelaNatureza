@@ -96,7 +96,7 @@ public:
 		std::cout << " , " << convertIEEE754BinaryArrayToFloat(bestSubject + (subjectSize / 2)) << std::endl;
 
 		// phenotype block
-		std::cout << "And his phenotype is " << bestValue << std::endl;
+		std::cout << " And his phenotype is " << bestValue << std::endl;
 
 		delete[] bestSubject;
 	}

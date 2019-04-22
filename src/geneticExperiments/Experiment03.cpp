@@ -51,7 +51,7 @@ public:
 		std::cout << std::endl << "Or in numerical form " << convertIEEE754BinaryArrayToFloat(bestSubject) << std::endl;
 
 		// phenotype block
-		std::cout << "And his phenotype is " << bestValue << std::endl;
+		std::cout << " And his phenotype is " << bestValue << std::endl;
 
 		delete[] bestSubject;
 	}

@@ -12,6 +12,9 @@
 
 #include "gaussianRandom.h"
 
+#ifndef CLASS_Gen_CPP_
+#define CLASS_Gen_CPP_
+
 class Gen {
 private:
 	double bestScore;
@@ -462,3 +465,5 @@ public:
 		return arrPopulation;
 	}
 };
+
+#endif /* CLASS_Gen_CPP_ */

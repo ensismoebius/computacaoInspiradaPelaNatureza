@@ -459,6 +459,10 @@ public:
 	void printPopulation() {
 		(*this->printFunction)(this->arrPopulation, this->populationSize, this->subjectSize, this->generation, this->bestScore);
 	}
+
+	char* getArrPopulation() const {
+		return arrPopulation;
+	}
 };
 
 //void print1(char* arrPopulation, int populationSize, int subjectSize, int generation, double score) {
@@ -584,6 +588,38 @@ void print4(char* arrPopulation, int populationSize, int subjectSize, int genera
 	subject = NULL;
 }
 
+void showFinalResults(int subjectSize, int populationSize, char* arrPopulation) {
+	double temp = 0;
+	double bestValue = std::numeric_limits<double>::max();
+
+	char* bestSubject = new char[subjectSize];
+
+	for (int i = 0; i < populationSize; i++) {
+
+		temp = fitness4(arrPopulation + (subjectSize * i), subjectSize);
+
+		if (temp < bestValue) {
+
+			bestValue = temp;
+
+			for (int j = 0; j < subjectSize; j++) {
+				bestSubject[j] = (arrPopulation + (subjectSize * i))[j];
+			}
+		}
+	}
+
+	std::cout << "The best genotype is ";
+	for (int j = 0; j < subjectSize; j++) {
+		std::cout << (unsigned int) (bestSubject[j]);
+	}
+	std::cout << std::endl << "Or in numerical form " << convertIEEE754BinaryArrayToFloat(bestSubject);
+	std::cout << " , " << convertIEEE754BinaryArrayToFloat(bestSubject + (subjectSize / 2)) << std::endl;
+
+	std::cout << "And his phenotype is " << bestValue << std::endl;
+
+	delete[] bestSubject;
+}
+
 int main() {
 
 	int subjectSize = 64;
@@ -595,9 +631,10 @@ int main() {
 
 	Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness4, print4, genesisFunction2);
 
+	pop.printPopulation();
+
 	int counter = 0;
 	while (pop.getBestScore() > 0 && counter < 100000) {
-//		pop.printPopulation();
 		pop.evaluateAllSubjects();
 		pop.selectTheBestSubjects();
 		pop.createNextGeneration();
@@ -605,5 +642,8 @@ int main() {
 	}
 
 	pop.printPopulation();
+	char* arrPopulation = pop.getArrPopulation();
+	showFinalResults(subjectSize, populationSize, arrPopulation);
+	delete[] arrPopulation;
 	return 0;
 }

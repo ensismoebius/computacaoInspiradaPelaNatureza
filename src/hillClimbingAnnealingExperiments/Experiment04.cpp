@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <limits>
 
 #include "../lib/annealing.h"
@@ -11,8 +12,6 @@ namespace hillClimbingAnnealingExperiments {
 	class Experiment04 {
 
 	public:
-
-		static double results;
 
 		/**
 		 * Bigger the value, better the fitness
@@ -29,7 +28,9 @@ namespace hillClimbingAnnealingExperiments {
 		}
 
 		static void perform(unsigned int iterations) {
-			results = simulated_annealing(iterations, std::numeric_limits<double>::max(), fitnness);
+			double results = simulated_annealing(iterations, std::numeric_limits<double>::max(), fitnness);
+			std::cout << "Result for pow(2, -2 * pow((x - 0.1) / 0.9, 2)) * pow(sin(5 * M_PI * x), 6) with " << iterations;
+			std::cout << " and target value MAX using Simulated Annealing: " << results;
 		}
 
 	};

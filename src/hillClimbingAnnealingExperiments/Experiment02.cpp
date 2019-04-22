@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 
 #include "../lib/hillClimbing.h"
 
@@ -10,7 +11,6 @@ namespace hillClimbingAnnealingExperiments {
 	class Experiment02 {
 
 	public:
-		static double results;
 
 		/**
 		 * Bigger the value, better the fitness
@@ -27,8 +27,9 @@ namespace hillClimbingAnnealingExperiments {
 		}
 
 		static void perform(unsigned int iterations) {
-			results = 0;
-					//stochasticHillClimbing(iterations, 0, fitnness);
+			double results = stochasticHillClimbing(iterations, 0, fitnness);
+			std::cout << "Result for pow(2, -2 * pow((x - 0.1) / 0.9, 2)) * pow(sin(5 * M_PI * x), 6) with " << iterations;
+			std::cout << " and target value 0 using Stochastic Hill Climbing: " << results;
 		}
 
 	};

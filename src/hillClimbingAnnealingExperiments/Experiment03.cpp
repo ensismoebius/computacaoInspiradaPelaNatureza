@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
 
 #include "../lib/hillClimbing.h"
 
@@ -12,8 +13,6 @@ namespace hillClimbingAnnealingExperiments {
 
 	public:
 
-		static double results;
-
 		static double fitnness(double x) {
 			// we want to minimize the function to zero
 			// so we must take only the absolute values
@@ -22,7 +21,9 @@ namespace hillClimbingAnnealingExperiments {
 		}
 
 		static void perform(unsigned int iterations) {
-			results = interactiveHillClimbing(10, iterations, 0, fitnness);
+			double results = interactiveHillClimbing(10, iterations, 0, fitnness);
+			std::cout << "Result for abs(pow(x, 3.0) + x + 3) with " << iterations;
+			std::cout << " and target value 0 using Interactive Hill Climbing: " << results;
 		}
 
 	};

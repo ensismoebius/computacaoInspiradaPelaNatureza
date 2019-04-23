@@ -44,8 +44,6 @@ namespace geneticExperiments {
 			if (x > 1) return 5.0;
 			if (x < 0) return 5.0;
 
-			std::cout << x << std::endl;
-
 			double p1 = -2.0 * pow((x - 0.1) / 0.9, 2.0);
 			double p2 = pow(sin(5.0 * M_PI * x), 6.0);
 			double final = (double) pow(2.0, p1) * p2;
@@ -79,7 +77,7 @@ namespace geneticExperiments {
 			std::cout << std::endl << "Or in numerical form " << convertIEEE754BinaryArrayToFloat(bestSubject) << std::endl;
 
 			// phenotype block
-			std::cout << " And his phenotype is " << bestValue << std::endl;
+			std::cout << " And his phenotype is " << bestValue << std::endl << std::endl;
 
 			delete[] bestSubject;
 		}
@@ -93,8 +91,6 @@ namespace geneticExperiments {
 
 			pop.setFilewriter(pFile);
 
-			pop.printPopulation();
-
 			unsigned int counter = 0;
 			while (pop.getBestScore() > 0 && counter < maxIterations) {
 				pop.evaluateAllSubjects();
@@ -103,7 +99,6 @@ namespace geneticExperiments {
 				counter++;
 			}
 
-			pop.printPopulation();
 			char* arrPopulation = pop.getArrPopulation();
 			showFinalResults(subjectSize, populationSize, arrPopulation);
 			delete[] arrPopulation;

@@ -79,7 +79,7 @@ namespace geneticExperiments {
 			std::cout << " And his phenotype is:" << std::endl;
 			for (int j = 0; j < subjectSize; j++) {
 				std::cout << (int) bestSubject[j] << ",";
-				if ((j + 1) % 3 == 0) std::cout << std::endl;
+				if ((j + 1) % 3 == 0) std::cout << std::endl << std::endl;
 			}
 			std::cout << std::endl;
 
@@ -95,8 +95,6 @@ namespace geneticExperiments {
 
 			pop.setFilewriter(pFile);
 
-			pop.printPopulation();
-
 			unsigned int counter = 0;
 			while (pop.getBestScore() > 0 && counter < maxIterations) {
 				pop.evaluateAllSubjects();
@@ -105,7 +103,6 @@ namespace geneticExperiments {
 				counter++;
 			}
 
-			pop.printPopulation();
 			char* arrPopulation = pop.getArrPopulation();
 			showFinalResults(subjectSize, populationSize, arrPopulation);
 			delete[] arrPopulation;

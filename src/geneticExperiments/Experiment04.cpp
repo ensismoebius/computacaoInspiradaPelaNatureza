@@ -98,7 +98,7 @@ namespace geneticExperiments {
 			std::cout << " , " << convertIEEE754BinaryArrayToFloat(bestSubject + (subjectSize / 2)) << std::endl;
 
 			// phenotype block
-			std::cout << " And his phenotype is " << bestValue << std::endl;
+			std::cout << " And his phenotype is " << bestValue << std::endl << std::endl;
 
 			delete[] bestSubject;
 		}
@@ -112,8 +112,6 @@ namespace geneticExperiments {
 
 			pop.setFilewriter(pFile);
 
-			pop.printPopulation();
-
 			unsigned int counter = 0;
 			while (pop.getBestScore() > 0 && counter < maxIterations) {
 				pop.evaluateAllSubjects();
@@ -122,7 +120,6 @@ namespace geneticExperiments {
 				counter++;
 			}
 
-			pop.printPopulation();
 			char* arrPopulation = pop.getArrPopulation();
 			showFinalResults(subjectSize, populationSize, arrPopulation);
 			delete[] arrPopulation;

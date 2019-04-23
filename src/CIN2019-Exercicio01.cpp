@@ -10,17 +10,19 @@
 
 int main() {
 
-	geneticExperiments::Experiment01::perform(1000);
-	geneticExperiments::Experiment02::perform(1000);
-	geneticExperiments::Experiment03::perform(1000);
-	geneticExperiments::Experiment04::perform(1000);
+	geneticExperiments::Experiment01::perform(1000,"/tmp/geneticExperiments::Experiment01.csv");
+	geneticExperiments::Experiment02::perform(1000,"/tmp/geneticExperiments::Experiment02.csv");
+	geneticExperiments::Experiment03::perform(1000,"/tmp/geneticExperiments::Experiment03.csv");
+	geneticExperiments::Experiment04::perform(1000,"/tmp/geneticExperiments::Experiment04.csv");
 
 	// hill climbing algorithms
-	hillClimbingAnnealingExperiments::Experiment02::perform(1000);
-	hillClimbingAnnealingExperiments::Experiment03::perform(1000);
+	hillClimbingAnnealingExperiments::Experiment01::perform(1000,"/tmp/hillClimbingAnnealingExperiments::Experiment01.csv");
+	hillClimbingAnnealingExperiments::Experiment02::perform(1000,"/tmp/hillClimbingAnnealingExperiments::Experiment02.csv");
+	hillClimbingAnnealingExperiments::Experiment03::perform(1000,"/tmp/hillClimbingAnnealingExperiments::Experiment03.csv");
 
 	// annealing algorithms
-	hillClimbingAnnealingExperiments::Experiment04::perform(1000);
+	hillClimbingAnnealingExperiments::Experiment04::perform(1000,"/tmp/hillClimbingAnnealingExperiments::Experiment04.csv");
+
 	return 0;
 }
 

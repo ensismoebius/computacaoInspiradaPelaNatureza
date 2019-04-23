@@ -5,7 +5,9 @@
  * more information read the license file
  */
 
+#include <bits/types/FILE.h>
 #include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <limits>
 #include <stdexcept>
@@ -17,6 +19,9 @@
 
 class Gen {
 private:
+
+	FILE* filewriter;
+
 	double bestScore;
 
 	int generation = 0;
@@ -217,6 +222,20 @@ private:
 
 	}
 
+	void writeGenotypeFenotype(char *arrGenotype, double fenotype) {
+
+		char strGenotype[this->subjectSize + 1];
+
+		// converts literals values into a readable format
+		for (int i = 0; i < this->subjectSize; i++)
+			strGenotype[i] = arrGenotype[i] + 48;
+
+		// finalizes the string
+		strGenotype[this->subjectSize] = '\0';
+
+		fprintf(this->filewriter, "%f\t%*s\n", fenotype, this->subjectSize, strGenotype);
+	}
+
 public:
 	Gen(int subjectSize, int populationSize, double fitnessWeight, double diversityWeight, double crossoverRate, double mutationRate, double (*fitnessFunction)(char*, int), void (*printFunction)(char* arrPopulation, int populationSize, int subjectSize, int generation, double bestScore), void (*genesisFunction)(char* arrPopulation, int populationSize, int subjectSize)) {
 
@@ -333,6 +352,8 @@ public:
 		// evaluating all subjects
 		for (; index < this->populationSize; index++) {
 			tempScore = this->arrFitness[index] = this->calculateIndividualFitness(this->arrPopulation + (index * this->subjectSize));
+
+			this->writeGenotypeFenotype(this->arrPopulation + (index * this->subjectSize), tempScore);
 
 			this->bestScore = this->bestScore > tempScore ? tempScore : this->bestScore;
 			sumOfScores += tempScore;
@@ -464,6 +485,15 @@ public:
 	char* getArrPopulation() const {
 		return arrPopulation;
 	}
+
+	FILE* getFilewriter() {
+		return filewriter;
+	}
+
+	void setFilewriter(FILE* filewriter) {
+		this->filewriter = filewriter;
+	}
 };
 
 #endif /* CLASS_Gen_CPP_ */
+

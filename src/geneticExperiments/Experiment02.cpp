@@ -84,8 +84,14 @@ namespace geneticExperiments {
 			delete[] bestSubject;
 		}
 
-		static void perform(unsigned int maxIterations) {
+		static void perform(unsigned int maxIterations, const char* filePath) {
+
+			FILE * pFile;
+			pFile = fopen(filePath, "w");
+
 			Gen pop = Gen(subjectSize, populationSize, fitnessWeight, diversityWeight, crossoverRate, mutationRate, fitness, print, genesisFunction);
+
+			pop.setFilewriter(pFile);
 
 			pop.printPopulation();
 
@@ -101,6 +107,8 @@ namespace geneticExperiments {
 			char* arrPopulation = pop.getArrPopulation();
 			showFinalResults(subjectSize, populationSize, arrPopulation);
 			delete[] arrPopulation;
+
+			fclose(pFile);
 		}
 
 	};

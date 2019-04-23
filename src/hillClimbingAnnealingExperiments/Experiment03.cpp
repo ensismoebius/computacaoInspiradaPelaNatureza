@@ -20,10 +20,12 @@ namespace hillClimbingAnnealingExperiments {
 			return abs(pow(x, 3.0) + x + 3);
 		}
 
-		static void perform(unsigned int iterations) {
-			double results = interactiveHillClimbing(10, iterations, 0, fitnness);
+		static void perform(unsigned int iterations, const char* filePath) {
+
+			double results = interactiveHillClimbing(10, iterations, 0, fitnness, filePath);
 			std::cout << "Result for abs(pow(x, 3.0) + x + 3) with " << iterations;
 			std::cout << " and target value 0 using Interactive Hill Climbing: " << results << std::endl << std::endl;
+
 		}
 
 	};

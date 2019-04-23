@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 
+#include "fileWriter.h"
 #include "gaussianRandom.h"
 #include "stochasticProbability.h"
 
@@ -20,7 +21,9 @@
  * perturbation too it takes a long time to find and build a suitable value
  * generator
  */
-double hillClimbing(int maxIterations, double targetValue, double (*fitnessFunction)(double)) {
+double hillClimbing(int maxIterations, double targetValue, double (*fitnessFunction)(double), const char* filePath) {
+
+	openFile(filePath);
 
 	double bestResult = getGaussionRandomPertubation() + 1.0;
 
@@ -30,10 +33,14 @@ double hillClimbing(int maxIterations, double targetValue, double (*fitnessFunct
 	while (maxIterations-- && (*fitnessFunction)(bestResult) != targetValue) {
 		double candidate = bestResult + getGaussionRandomPertubation();
 
+		writeFile(candidate);
+
 		if ((*fitnessFunction)(candidate) < (*fitnessFunction)(bestResult)) {
 			bestResult = candidate;
 		}
 	}
+
+	closeFile();
 	return bestResult;
 }
 
@@ -43,23 +50,30 @@ double hillClimbing(int maxIterations, double targetValue, double (*fitnessFunct
  * The same happens as the regular hill climbing, the only difference are that,
  * having multiple starting points, the probabilities to find an result is better
  */
-double interactiveHillClimbing(int samplesAmount, int maxIterations, double targetValue, double (*fitnessFunction)(double)) {
+double interactiveHillClimbing(int samplesAmount, int maxIterations, double targetValue, double (*fitnessFunction)(double), const char* filePath) {
+
+	openFile(filePath);
+
 	double globalBestResult = getGaussionRandomPertubation() + 1.0;
 
 	while (samplesAmount-- && (*fitnessFunction)(globalBestResult) != 0) {
 
 		double localBestResult = getGaussionRandomPertubation() + 1.0;
 
+		writeFile(localBestResult);
+
 		if ((*fitnessFunction)(localBestResult) == targetValue) {
 			return localBestResult;
 		}
 
-		localBestResult = hillClimbing(maxIterations, targetValue, (*fitnessFunction));
+		localBestResult = hillClimbing(maxIterations, targetValue, (*fitnessFunction), filePath);
 
 		if ((*fitnessFunction)(localBestResult) < (*fitnessFunction)(globalBestResult)) {
 			globalBestResult = localBestResult;
 		}
 	}
+
+	closeFile();
 
 	return globalBestResult;
 }
@@ -73,7 +87,9 @@ double interactiveHillClimbing(int samplesAmount, int maxIterations, double targ
  * order to get higher probabilities of the
  * candidate be the new bestResult.
  */
-double stochasticHillClimbing(int maxIterations, double targetValue, double (*fitnessFunction)(double)) {
+double stochasticHillClimbing(int maxIterations, double targetValue, double (*fitnessFunction)(double), const char* filePath) {
+
+	openFile(filePath);
 
 	// the bigger tFactor are, the bigger must
 	// be the difference between the values in
@@ -88,6 +104,8 @@ double stochasticHillClimbing(int maxIterations, double targetValue, double (*fi
 	while (maxIterations-- && (*fitnessFunction)(bestResult) != targetValue) {
 		double candidate = bestResult + getGaussionRandomPertubation();
 
+		writeFile(candidate);
+
 		if ((*fitnessFunction)(candidate) == targetValue) {
 			return candidate;
 		}
@@ -99,5 +117,9 @@ double stochasticHillClimbing(int maxIterations, double targetValue, double (*fi
 			bestResult = candidate;
 		}
 	}
+
+	closeFile();
+
 	return bestResult;
 }
+

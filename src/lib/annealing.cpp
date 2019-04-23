@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "fileWriter.h"
 #include "gaussianRandom.h"
 #include "stochasticProbability.h"
 
@@ -18,7 +19,9 @@
  * not shown particularly good results, it looks slower and his precision
  * are lower compared to hill climbing algorithms
  */
-double simulated_annealing(double systemTemperature, double targetValue, double (*fitnessFunction)(double)) {
+double simulated_annealing(double systemTemperature, double targetValue, double (*fitnessFunction)(double), const char* filePath) {
+
+	openFile(filePath);
 
 	// generating the first bestResult
 	double bestResult;
@@ -38,6 +41,8 @@ double simulated_annealing(double systemTemperature, double targetValue, double 
 			candidate = fabs(bestResult + getGaussionRandomPertubation());
 		} while (candidate > 0 && candidate > 1);
 
+		writeFile(candidate);
+
 		if ((*fitnessFunction)(candidate) > (*fitnessFunction)(bestResult)) {
 			bestResult = candidate;
 		} else {
@@ -51,6 +56,9 @@ double simulated_annealing(double systemTemperature, double targetValue, double 
 
 		systemTemperature *= 0.9;
 	}
+
+	closeFile();
+
 	return bestResult;
 }
 

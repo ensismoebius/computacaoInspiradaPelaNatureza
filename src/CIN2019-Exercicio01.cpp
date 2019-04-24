@@ -1,3 +1,18 @@
+/**
+ * @author André Furlan
+ * @email ensismoebius@gmail.com
+ * This whole project are under GPLv3, for
+ * more information read the license file
+ *
+ * 24 de abr de 2019
+ *
+ * This is the main file, welcome!
+ * Here we perform all experiments.
+ *
+ * Long life to open source software!
+ * Peace, love and anarchism for everyone!!
+ */
+
 #include "geneticExperiments/Experiment01.cpp"
 #include "geneticExperiments/Experiment02.cpp"
 #include "geneticExperiments/Experiment03.cpp"

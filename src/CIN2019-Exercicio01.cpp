@@ -40,7 +40,7 @@ int main() {
 	hillClimbingAnnealingExperiments::Experiment05::perform(10000, "/tmp/hillClimbingAnnealingExperiments::Experiment05.csv");
 
 	// annealing algorithms
-	hillClimbingAnnealingExperiments::Experiment04::perform(10000, "/tmp/hillClimbingAnnealingExperiments::Experiment04.csv");
+	//hillClimbingAnnealingExperiments::Experiment04::perform(10000, "/tmp/hillClimbingAnnealingExperiments::Experiment04.csv");
 
 	return 0;
 }

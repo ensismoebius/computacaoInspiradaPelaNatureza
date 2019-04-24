@@ -94,7 +94,7 @@ double stochasticHillClimbing(int maxIterations, double (*fitnessFunction)(doubl
 
 	openFile(filePath);
 
-	// the bigger tFactor are, the bigger must
+	// the bigger tFactor is, the bigger must
 	// be the difference between the values in
 	// order to get higher probabilities to the
 	// candidate be the new bestResult

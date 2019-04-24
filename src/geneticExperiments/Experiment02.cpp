@@ -9,7 +9,11 @@
  * Experiment to minimize (2^(-2* ((x−0.1)/0.9)^ 2))*(sin(5πx))^6
  * using genetic algorithms;
  */
+
+#include <bits/types/FILE.h>
 #include <cmath>
+#include <cstdio>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 
@@ -117,15 +121,19 @@ namespace geneticExperiments {
 					}
 				}
 
+				// If we don't do this cout messes up with our values
+				std::cout << std::fixed;
+				std::cout << std::setprecision(10);
+
 				// genotype block
-				std::cout << "The best genotype is ";
+				std::cout << "The best genotype is: ";
 				for (int j = 0; j < subjectSize; j++) {
 					std::cout << (unsigned int) (bestSubject[j]);
 				}
-				std::cout << std::endl << "Or in numerical form " << convertIEEE754BinaryArrayToFloat(bestSubject) << std::endl;
+				std::cout << std::endl << " or in numerical form: " << convertIEEE754BinaryArrayToFloat(bestSubject) << std::endl;
 
 				// phenotype block
-				std::cout << " And his phenotype is " << bestValue << std::endl << std::endl;
+				std::cout << " and his phenotype is: " << bestValue << std::endl << std::endl;
 
 				delete[] bestSubject;
 			}

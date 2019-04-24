@@ -3,14 +3,16 @@
  * @email ensismoebius@gmail.com
  * This whole project are under GPLv3, for
  * more information read the license file
- * 
+ *
  * 24 de abr de 2019
- * 
- * Experiment to minimize x^3.0 + x + 3 
+ *
+ * Experiment to minimize x^3.0 + x + 3
  * using interactive hill climbing;
  */
+
 #include <cmath>
 #include <cstdlib>
+#include <iomanip>
 #include <iostream>
 
 #include "../lib/hillClimbing.h"
@@ -21,7 +23,7 @@
 namespace hillClimbingAnnealingExperiments {
 
 	/**
-	 * Experiment to minimize x^3.0 + x + 3 
+	 * Experiment to minimize x^3.0 + x + 3
 	 * using interactive hill climbing;
 	 */
 	class Experiment03 {
@@ -47,9 +49,13 @@ namespace hillClimbingAnnealingExperiments {
 			 */
 			static void perform(unsigned int iterations, const char* filePath) {
 
+				// If we don't do this cout messes up with our values
+				std::cout << std::fixed;
+				std::cout << std::setprecision(10);
+
 				double results = interactiveHillClimbing(10, iterations, fitnness, filePath);
-				std::cout << "Result for abs(pow(x, 3.0) + x + 3) with " << iterations;
-				std::cout << " and target value 0 using Interactive Hill Climbing: " << results << std::endl << std::endl;
+				std::cout << "Result for minimization of x^3.0 + x + 3 with " << iterations;
+				std::cout << " iterations using Interactive Hill Climbing: " << results << std::endl << std::endl;
 
 			}
 

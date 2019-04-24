@@ -8,8 +8,10 @@
  *
  * Experiment to minimize x^3.0 + x + 3 using hill climbing;
  */
+
 #include <cmath>
 #include <cstdlib>
+#include <iomanip>
 #include <iostream>
 
 #include "../lib/hillClimbing.h"
@@ -45,9 +47,13 @@ namespace hillClimbingAnnealingExperiments {
 			 */
 			static void perform(unsigned int iterations, const char* filePath) {
 
+				// If we don't do this cout messes up with our values
+				std::cout << std::fixed;
+				std::cout << std::setprecision(10);
+
 				double results = hillClimbing(iterations, fitnness, filePath);
-				std::cout << "Result for abs(pow(x, 3.0) + x + 3) with " << iterations;
-				std::cout << " and target value 0 using Hill Climbing: " << results << std::endl << std::endl;
+				std::cout << "Results for minimization of x^3.0 + x + 3 with " << iterations;
+				std::cout << " iterations using Hill Climbing: " << results << std::endl << std::endl;
 
 			}
 

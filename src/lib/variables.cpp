@@ -1,22 +1,42 @@
+/**
+ * @author André Furlan
+ * @author Kaustav kumar Chanda
+ * @email ensismoebius@gmail.com
+ * This whole project are under GPLv3, for
+ * more information read the license file
+ *
+ * 24 de abr de 2019
+ *
+ * Utilities to convert values and see another ones
+ * a special thanks to Kaustav kumar Chanda, you
+ * helped a LOT
+ * @url https://www.geeksforgeeks.org/program-for-conversion-of-32-bits-single-precision-ieee-754-floating-point-representation/
+ *
+ */
 #include <stddef.h>
 #include <cmath>
 #include <iostream>
 
+/**
+ * Thanks to:
+ * @author Kaustav kumar Chanda
+ * @url https://www.geeksforgeeks.org/program-for-conversion-of-32-bits-single-precision-ieee-754-floating-point-representation/
+ */
 typedef union {
 
-	float f;
-	struct {
+		float f;
+		struct {
 
-		// Order is important.
-		// Here the members of the union data structure
-		// use the same memory (32 bits).
-		// The ordering is taken
-		// from the LSB to the MSB.
-		unsigned int mantissa :23;
-		unsigned int exponent :8;
-		unsigned int sign :1;
+				// Order is important.
+				// Here the members of the union data structure
+				// use the same memory (32 bits).
+				// The ordering is taken
+				// from the LSB to the MSB.
+				unsigned int mantissa :23;
+				unsigned int exponent :8;
+				unsigned int sign :1;
 
-	} raw;
+		} raw;
 } myfloat;
 
 /*
@@ -69,8 +89,6 @@ unsigned int charArrayToIeeePart(char* arr, unsigned int low, unsigned int high)
 	}
 	return f;
 }
-
-
 
 /**
  * Thanks to:

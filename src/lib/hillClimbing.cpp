@@ -3,6 +3,10 @@
  * @email ensismoebius@gmail.com
  * This whole project are under GPLv3, for
  * more information read the license file
+ *
+ * 24 de abr de 2019
+ *
+ * Contains of functions needed for Hill climb algorithms
  */
 
 #include <cstdlib>
@@ -21,23 +25,23 @@
  * perturbation too it takes a long time to find and build a suitable value
  * generator
  */
-double hillClimbing(int maxIterations, double targetValue, double (*fitnessFunction)(double), const char* filePath) {
+double hillClimbing(int maxIterations, double (*fitnessFunction)(double), const char* filePath) {
 
 	openFile(filePath);
 
-	double bestResult = getGaussionRandomPertubation() + 1.0;
+	double bestResult = getGaussionRandomPertubation() + .5;
 
-	if ((*fitnessFunction)(bestResult) == targetValue) {
+	if ((*fitnessFunction)(bestResult) == 0) {
 		return bestResult;
 	}
-	while (maxIterations-- && (*fitnessFunction)(bestResult) != targetValue) {
+	while (maxIterations-- && (*fitnessFunction)(bestResult) != 0) {
 		double candidate = bestResult + getGaussionRandomPertubation();
-
-		writeFile(candidate);
 
 		if ((*fitnessFunction)(candidate) < (*fitnessFunction)(bestResult)) {
 			bestResult = candidate;
 		}
+
+		writeFile(bestResult);
 	}
 
 	closeFile();
@@ -50,29 +54,28 @@ double hillClimbing(int maxIterations, double targetValue, double (*fitnessFunct
  * The same happens as the regular hill climbing, the only difference are that,
  * having multiple starting points, the probabilities to find an result is better
  */
-double interactiveHillClimbing(int samplesAmount, int maxIterations, double targetValue, double (*fitnessFunction)(double), const char* filePath) {
+double interactiveHillClimbing(int samplesAmount, int maxIterations, double (*fitnessFunction)(double), const char* filePath) {
 
 	openFile(filePath);
 
-	double globalBestResult = getGaussionRandomPertubation() + 1.0;
+	double globalBestResult = getGaussionRandomPertubation() + .5;
 
 	while (samplesAmount-- && (*fitnessFunction)(globalBestResult) != 0) {
 
 		double localBestResult = getGaussionRandomPertubation() + 1.0;
 
-		writeFile(localBestResult);
-
-		if ((*fitnessFunction)(localBestResult) == targetValue) {
+		if ((*fitnessFunction)(localBestResult) == 0) {
 			return localBestResult;
 		}
 
-		localBestResult = hillClimbing(maxIterations, targetValue, (*fitnessFunction), filePath);
+		localBestResult = hillClimbing(maxIterations, (*fitnessFunction), filePath);
 
 		if ((*fitnessFunction)(localBestResult) < (*fitnessFunction)(globalBestResult)) {
 			globalBestResult = localBestResult;
 		}
-	}
 
+		writeFile(globalBestResult);
+	}
 	closeFile();
 
 	return globalBestResult;
@@ -87,7 +90,7 @@ double interactiveHillClimbing(int samplesAmount, int maxIterations, double targ
  * order to get higher probabilities of the
  * candidate be the new bestResult.
  */
-double stochasticHillClimbing(int maxIterations, double targetValue, double (*fitnessFunction)(double), const char* filePath) {
+double stochasticHillClimbing(int maxIterations, double (*fitnessFunction)(double), const char* filePath) {
 
 	openFile(filePath);
 
@@ -96,17 +99,15 @@ double stochasticHillClimbing(int maxIterations, double targetValue, double (*fi
 	// order to get higher probabilities to the
 	// candidate be the new bestResult
 	double tFactor = .5;
-	double bestResult = getGaussionRandomPertubation() + 1.0;
+	double bestResult = getGaussionRandomPertubation() + .5;
 
-	if ((*fitnessFunction)(bestResult) == targetValue) {
+	if ((*fitnessFunction)(bestResult) == 0) {
 		return bestResult;
 	}
-	while (maxIterations-- && (*fitnessFunction)(bestResult) != targetValue) {
+	while (maxIterations-- && (*fitnessFunction)(bestResult) != 0) {
 		double candidate = bestResult + getGaussionRandomPertubation();
 
-		writeFile(candidate);
-
-		if ((*fitnessFunction)(candidate) == targetValue) {
+		if ((*fitnessFunction)(candidate) == 0) {
 			return candidate;
 		}
 
@@ -116,10 +117,11 @@ double stochasticHillClimbing(int maxIterations, double targetValue, double (*fi
 		if (prob1 < prob2) {
 			bestResult = candidate;
 		}
+
+		writeFile(bestResult);
 	}
 
 	closeFile();
-
 	return bestResult;
 }
 

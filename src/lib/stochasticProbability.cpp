@@ -3,6 +3,10 @@
  * @email ensismoebius@gmail.com
  * This whole project are under GPLv3, for
  * more information read the license file
+ *
+ * 24 de abr de 2019
+ *
+ * Calculates stochastic probability
  */
 
 #include <cmath>
@@ -17,7 +21,11 @@
  * Backward - second option (a.k.a. next should be lower)
  * candidate lower than bestResult result in bigger probabilities
  */
-double calculateStochasticProbability(double candidate, double bestResult, double tFactor, char forward) {
-	return forward ? (1.0 / (1.0 + exp((bestResult - candidate) / tFactor))) : (1.0 / (1.0 + exp((candidate - bestResult) / tFactor)));
+double calculateStochasticProbability(double evalCandidate, double evalBestResult, double tFactor, char forward) {
+	if (forward) {
+		return (1.0 / (1.0 + exp((evalBestResult - evalCandidate) / tFactor)));
+	} else {
+		return (1.0 / (1.0 + exp((evalCandidate - evalBestResult) / tFactor)));
+	}
 }
 

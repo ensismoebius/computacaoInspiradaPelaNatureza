@@ -3,6 +3,10 @@
  * @email ensismoebius@gmail.com
  * This whole project are under GPLv3, for
  * more information read the license file
+ *
+ * 24 de abr de 2019
+ *
+ * Contains of functions needed for Simulated annealing algorithms
  */
 
 #include <cmath>
@@ -43,7 +47,7 @@ double simulated_annealing(double systemTemperature, double targetValue, double 
 
 		writeFile(candidate);
 
-		if ((*fitnessFunction)(candidate) > (*fitnessFunction)(bestResult)) {
+		if ((*fitnessFunction)(candidate) < (*fitnessFunction)(bestResult)) {
 			bestResult = candidate;
 		} else {
 			double prob1 = double(rand()) / double(RAND_MAX);
@@ -54,7 +58,7 @@ double simulated_annealing(double systemTemperature, double targetValue, double 
 			}
 		}
 
-		systemTemperature *= 0.9;
+		systemTemperature *= 0.99999;
 	}
 
 	closeFile();

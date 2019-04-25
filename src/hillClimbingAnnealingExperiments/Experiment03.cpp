@@ -51,10 +51,10 @@ namespace hillClimbingAnnealingExperiments {
 
 				// If we don't do this cout messes up with our values
 				std::cout << std::fixed;
-				std::cout << std::setprecision(10);
+				std::cout << std::setprecision(6);
 
 				double results = interactiveHillClimbing(10, iterations, fitnness, filePath);
-				std::cout << "Result for minimization of x^3.0 + x + 3 with " << iterations;
+				std::cout << "Hill-Anna experiment 03 - Result for minimization of x^3.0 + x + 3 with " << iterations;
 				std::cout << " iterations using Interactive Hill Climbing: " << results << std::endl << std::endl;
 
 			}

@@ -123,17 +123,17 @@ namespace geneticExperiments {
 
 				// If we don't do this cout messes up with our values
 				std::cout << std::fixed;
-				std::cout << std::setprecision(10);
+				std::cout << std::setprecision(6);
 
 				// genotype block
-				std::cout << "The best genotype is: ";
+				std::cout << "Genetic experiment 02 - The best genotype is: ";
 				for (int j = 0; j < subjectSize; j++) {
 					std::cout << (unsigned int) (bestSubject[j]);
 				}
 				std::cout << std::endl << " or in numerical form: " << convertIEEE754BinaryArrayToFloat(bestSubject) << std::endl;
 
 				// phenotype block
-				std::cout << " and his phenotype is: " << bestValue << std::endl << std::endl;
+				std::cout << " and his phenotype is: " << 5 - bestValue << std::endl << std::endl;
 
 				delete[] bestSubject;
 			}

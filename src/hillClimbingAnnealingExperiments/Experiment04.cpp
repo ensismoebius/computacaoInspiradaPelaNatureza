@@ -55,10 +55,10 @@ namespace hillClimbingAnnealingExperiments {
 
 				// If we don't do this cout messes up with our values
 				std::cout << std::fixed;
-				std::cout << std::setprecision(10);
+				std::cout << std::setprecision(6);
 
 				double results = simulated_annealing(iterations, std::numeric_limits<double>::max(), fitnness, filePath);
-				std::cout << "Result for maximization of (2^(-2 * ((x - 0.1) / 0.9)^2)) * (sin(5 * M_PI * x)^6 with " << iterations;
+				std::cout << "Hill-Anna experiment 04 - Result for maximization of (2^(-2 * ((x - 0.1) / 0.9)^2)) * (sin(5 * M_PI * x)^6 with " << iterations;
 				std::cout << " iterations using Simulated Annealing: " << results << std::endl << std::endl;
 			}
 

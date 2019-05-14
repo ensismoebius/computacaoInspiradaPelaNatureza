@@ -1,61 +1,62 @@
+#include "lib/gaussianRandom.h"
+
 /**
  * @author André Furlan
  * @email ensismoebius@gmail.com
  * This whole project are under GPLv3, for
  * more information read the license file
  *
- * 24 de abr de 2019
+ * 14 de mai de 2019
  *
- * This is the main file, welcome!
- * Here we perform all experiments.
- *
- * Long life to open source software!
- * Peace, love and anarchism for everyone!!
  */
 
-#include "geneticExperiments/Experiment01.cpp"
-#include "geneticExperiments/Experiment02.cpp"
-#include "geneticExperiments/Experiment03.cpp"
-#include "geneticExperiments/Experiment04.cpp"
-#include "hillClimbingAnnealingExperiments/Experiment01.cpp"
-#include "hillClimbingAnnealingExperiments/Experiment02.cpp"
-#include "hillClimbingAnnealingExperiments/Experiment03.cpp"
-#include "hillClimbingAnnealingExperiments/Experiment04.cpp"
-#include "hillClimbingAnnealingExperiments/Experiment05.cpp"
+class Neuron {
+	public:
+		float value;
 
-void doGeneticExperiments() {
-	// genetic algorithms
-	geneticExperiments::Experiment01::perform(10000, "/tmp/geneticExperiments::Experiment01.csv");
-	geneticExperiments::Experiment02::perform(10000, "/tmp/geneticExperiments::Experiment02.csv");
-	geneticExperiments::Experiment03::perform(10000, "/tmp/geneticExperiments::Experiment03.csv");
-	geneticExperiments::Experiment04::perform(10000, "/tmp/geneticExperiments::Experiment04.csv");
-}
+		float* arrWeights;
+		unsigned int arrWeightsSize;
 
-void doHillClimbingExperiments() {
-	// hill climbing algorithms
-	hillClimbingAnnealingExperiments::Experiment01::perform(10000, "/tmp/hillClimbingAnnealingExperiments::Experiment01.csv");
-	hillClimbingAnnealingExperiments::Experiment02::perform(10000, "/tmp/hillClimbingAnnealingExperiments::Experiment02.csv");
-	hillClimbingAnnealingExperiments::Experiment03::perform(10000, "/tmp/hillClimbingAnnealingExperiments::Experiment03.csv");
-	hillClimbingAnnealingExperiments::Experiment05::perform(10000, "/tmp/hillClimbingAnnealingExperiments::Experiment05.csv");
-}
+		float* arrInputs;
+		unsigned int arrInputsSize;
 
-void doAnnealingExperiments() {
-	// annealing algorithms
-	hillClimbingAnnealingExperiments::Experiment04::perform(10000, "/tmp/hillClimbingAnnealingExperiments::Experiment04.csv");
-}
+		Neuron(float value) {
+			this->value = value;
 
-/**
- * Do all the experiments!!!!!
- */
+			this->arrWeights = 0;
+			this->arrWeightsSize = 0;
+
+			this->arrInputs = 0;
+			this->arrInputsSize = 0;
+		}
+
+		Neuron(float value, float* arrWeights, unsigned int arrWeightsSize, float* arrInputs, unsigned int arrInputsSize) {
+			this->value = value;
+
+			this->arrWeights = arrWeights;
+			this->arrWeightsSize = arrWeightsSize;
+
+			this->arrInputs = arrInputs;
+			this->arrInputsSize = arrInputsSize;
+		}
+};
+
+class NeuralNetwork {
+	public:
+		NeuralNetwork(unsigned int inputSize, unsigned int innerLayersSize, unsigned int layersSize, unsigned int outputSize) {
+			float* arrWeights = new float[inputSize];
+			this->initializeWeights(arrWeights, inputSize);
+		}
+
+	private:
+		void initializeWeights(float*& arrWeights, unsigned int arrWeightsSize) {
+			while (arrWeightsSize--) {
+				arrWeights[arrWeightsSize] = getGaussionRandomPertubation();
+			}
+		}
+};
+
 int main() {
-
-	// genetic algorithms
-	doGeneticExperiments();
-	// hill climbing algorithms
-	doHillClimbingExperiments();
-	// annealing algorithms
-	doAnnealingExperiments();
-
-	return 0;
+	NeuralNetwork* n = new NeuralNetwork(100);
 }
 

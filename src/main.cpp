@@ -96,11 +96,10 @@ class Neuron {
 		void rectifyWeights(float alpha, float error) {
 			for (unsigned int i = 0; i < this->arrWeightsSize; i++) {
 				this->arrWeights[i] += this->arrInputsNeurons[i]->getValue() * alpha * error;
-			}
-
-			for (unsigned int i = 0; i < this->arrInputsNeuronsSize; i++) {
 				this->arrInputsNeurons[i]->rectifyWeights(alpha, error);
 			}
+			//for (unsigned int i = 0; i < this->arrInputsNeuronsSize; i++) {
+			//}
 		}
 
 	private:
@@ -354,13 +353,13 @@ class NeuralNetwork {
 
 int main() {
 
-	unsigned int inputSize = 2;
-	unsigned int outputSize = 2;
+	unsigned int inputSize = 4;
+	unsigned int outputSize = 3;
 	unsigned int innerLayerSize = 2;
-	unsigned int amountOfInnerLayers = 1;
+	unsigned int amountOfInnerLayers = 3;
 
-	float arrDesiredOutput[] = { 0, 0 };
-	float arrInput[] = { 1, 0 };
+	float arrDesiredOutput[] = { 0, 0, 0 };
+	float arrInput[] = { 5.1, 3.5, 1.4, 0.2 };
 
 	NeuralNetwork* n = new NeuralNetwork(inputSize, outputSize, amountOfInnerLayers, innerLayerSize);
 
@@ -370,7 +369,7 @@ int main() {
 	std::cout << std::fixed;
 	std::cout << std::setprecision(6);
 
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 10000; i++) {
 		n->iterate();
 
 		float* errors = n->getErrors();

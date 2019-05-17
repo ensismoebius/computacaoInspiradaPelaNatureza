@@ -23,108 +23,86 @@ namespace neuralExperiments {
 	class Experiment01 {
 		public:
 
-			static void sofmax(float*& arrValues, unsigned int valuesLength) {
-
-				double sum = 0;
-
-				for (unsigned int i = 0; i < valuesLength; i++) {
-//					sum += exp(arrValues[i]);
-					sum += pow(10, arrValues[i]);
-				}
-
-				for (unsigned int i = 0; i < valuesLength; i++) {
-//					arrValues[i] = exp(arrValues[i]) / sum;
-					arrValues[i] = pow(10, arrValues[i]) / sum;
-				}
-			}
-
 			static void perform() {
-
-				float* teste = new float[3];
-				teste[0] = 0.4;
-				teste[1] = 0.5;
-				teste[2] = 0.4;
-
-				sofmax(teste, 3);
 
 				std::cout << "\n";
 
-//				std::string line;
-//				std::cout << std::fixed;
-//				std::cout << std::setprecision(6);
-//
-//				float bias = 0.1;
-//				unsigned int maxIt = 50;
-//				unsigned int inputSize = 4;
-//				unsigned int outputSize = 3;
-//				unsigned int innerLayerSize = 10;
-//				unsigned int amountOfInnerLayers = 1;
-//
-//				float** arrInput = new float*[105];
-//				float** arrDesiredOutput = new float*[105];
-//
-//				NeuralNetwork* n = new NeuralNetwork(inputSize, outputSize, amountOfInnerLayers, innerLayerSize, bias);
-//
-//				// Training network
-//				std::cout << "Reading training file... \n";
-////				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisSetosa.data");
-//				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTraining.data");
-//				unsigned int fileItemNumber = 0;
-//				while (readFile(infileTraining, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
-//					fileItemNumber++;
-//				}
-//				infileTraining.close();
-//
-//				std::cout << "Training... \n";
-//				for (unsigned int i = 0; i < maxIt; i++) {
-//					for (unsigned int j = 0; j < fileItemNumber; j++) {
-//						n->pushDesiredResults(arrDesiredOutput[j]);
-//						n->pushInputs(arrInput[j]);
-//						n->iterate(1);
-//					}
-//				}
-//
-//				// Validating network
-//				std::cout << "Reading validating file... \n";
-//				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisValidating.data");
-////				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisSetosa.data");
-//				fileItemNumber = 0;
-//				while (readFile(infileValidating, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
-//					fileItemNumber++;
-//				}
-//				infileValidating.close();
-//
-//				// Validating
-//				std::cout << "Validating... \n";
-//				for (unsigned int j = 0; j < fileItemNumber; j++) {
-//
-//					n->pushInputs(arrInput[j]);
-//					n->iterate();
-//
-//					std::cout << "I want " << getDataName(arrDesiredOutput[j]) << ".";
-//
-//					if (compareResults(arrDesiredOutput[j], n->getOutputLayer(), outputSize)) {
-//						std::cout << "Success!!!\n";
-//					} else {
-//						std::cout << "Fail!!!\n";
-//					}
-//				}
-//
-//				// Is this smart? Lets see
-//				arrInput[0][0] = 5.0;
-//				arrInput[0][1] = 3.0;
-//				arrInput[0][2] = 1.6;
-//				arrInput[0][4] = 0.2;
-//
-//				n->pushInputs(arrInput[0]);
-//				n->iterate();
-//				showResults(outputSize, n);
-//
-//				delete n;
-//				delete[] arrInput;
-//				delete[] arrDesiredOutput;
-//
-//				infileTraining.close();
+				std::string line;
+				std::cout << std::fixed;
+				std::cout << std::setprecision(6);
+
+				float bias = 0.1;
+				unsigned int maxIt = 10000;
+				unsigned int inputSize = 4;
+				unsigned int outputSize = 3;
+				unsigned int innerLayerSize = 7;
+				unsigned int amountOfInnerLayers = 1;
+
+				float** arrInput = new float*[105];
+				float** arrDesiredOutput = new float*[105];
+
+				NeuralNetwork* n = new NeuralNetwork(inputSize, outputSize, amountOfInnerLayers, innerLayerSize, bias);
+
+				// Training network
+				std::cout << "Reading training file... \n";
+//				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisSetosa.data");
+				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTraining.data");
+				unsigned int fileItemNumber = 0;
+				while (readFile(infileTraining, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+					fileItemNumber++;
+				}
+				infileTraining.close();
+
+				std::cout << "Training... \n";
+				for (unsigned int i = 0; i < maxIt; i++) {
+					for (unsigned int j = 0; j < fileItemNumber; j++) {
+						n->pushDesiredResults(arrDesiredOutput[j]);
+						n->pushInputs(arrInput[j]);
+						n->iterate(1);
+					}
+				}
+
+				// Validating network
+				std::cout << "Reading validating file... \n";
+				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisValidating.data");
+//				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisSetosa.data");
+				fileItemNumber = 0;
+				while (readFile(infileValidating, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+					fileItemNumber++;
+				}
+				infileValidating.close();
+
+				// Validating
+				std::cout << "Validating... \n";
+				for (unsigned int j = 0; j < fileItemNumber; j++) {
+
+					n->pushInputs(arrInput[j]);
+					n->iterate();
+
+					std::cout << "I want " << getDataName(arrDesiredOutput[j]) << ".";
+
+					if (compareResults(arrDesiredOutput[j], n->getOutputLayer(), outputSize)) {
+						std::cout << "Success!!!\n";
+					} else {
+						std::cout << "Fail!!!\n";
+					}
+				}
+
+				// Is this smart? Lets see
+				arrInput[0][0] = 5.0;
+				arrInput[0][1] = 3.0;
+				arrInput[0][2] = 1.6;
+				arrInput[0][4] = 0.2;
+
+				n->pushInputs(arrInput[0]);
+				n->iterate();
+				showResults(outputSize, n);
+
+				delete n;
+				delete[] arrInput;
+				delete[] arrDesiredOutput;
+
+				infileTraining.close();
 			}
 
 		private:

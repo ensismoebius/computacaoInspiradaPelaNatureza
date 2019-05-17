@@ -123,10 +123,10 @@ class NeuralNetwork {
 
 				if (training) {
 					// Calculates the error
-					this->arrErrorValues[i] = val - this->arrDesiredOutputValues[i];
+					this->arrErrorValues[i] = this->arrDesiredOutputValues[i] - val;
 
 					// Rectify the weights
-					this->arrOutputLayer[i]->rectifyWeights(0.2, this->arrErrorValues[i]);
+					this->arrOutputLayer[i]->rectifyWeights(0.1, this->arrErrorValues[i]);
 				}
 			}
 		}

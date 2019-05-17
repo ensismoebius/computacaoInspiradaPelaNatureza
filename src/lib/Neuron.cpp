@@ -47,7 +47,7 @@ class Neuron {
 		 */
 		Neuron() {
 
-			this->bias = 0;
+			this->bias = 1;
 
 			// Populate with an invalid value
 			// the actual value pushed after
@@ -125,8 +125,8 @@ class Neuron {
 			}
 		}
 
-		double activationFunction(double value) {
-			return (2.0 / (1.0 + exp(value))) - 1;
+		double activationFunction(double net) {
+			return (1.0 / (1.0 + exp(-net)));
 		}
 
 		double calculateNeuronSum() {

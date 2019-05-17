@@ -18,7 +18,7 @@
 /**
  * That's here where all happens
  * Here is where we push the values to
- * the neural network
+ * the neural network and get its results
  */
 class NeuralNetwork {
 	public:
@@ -76,15 +76,20 @@ class NeuralNetwork {
 		 * @param amountOfInnerLayers - Amount inner ( a.k.a hidden ) layers
 		 * @param innerLayersSize - Amount of neurons at inner layers
 		 */
-		NeuralNetwork(unsigned int inputLayerSize, unsigned int outputLayerSize, unsigned int amountOfInnerLayers, unsigned int innerLayersSize) {
+		NeuralNetwork(unsigned int inputLayerSize, unsigned int outputLayerSize, unsigned int amountOfInnerLayers, unsigned int innerLayersSize, float bias) {
 			buildInputLayer(inputLayerSize);
-			buildInnerLayer(innerLayersSize, amountOfInnerLayers, inputLayerSize);
-			buildOutputLayer(amountOfInnerLayers, outputLayerSize, inputLayerSize, innerLayersSize);
+			buildInnerLayer(inputLayerSize, innerLayersSize, amountOfInnerLayers, bias);
+			buildOutputLayer(inputLayerSize, innerLayersSize, amountOfInnerLayers, outputLayerSize, bias);
 
 			this->arrErrorValues = new float[outputLayerSize];
 			this->arrDesiredOutputValues = new float[outputLayerSize];
 		}
 
+		/**
+		 * Push desired values into network.
+		 * Used for network training
+		 * @param arrDesiredResults
+		 */
 		void pushDesiredResults(float* arrDesiredResults) {
 			for (unsigned int i = 0; i < this->outputLayerSize; i++) {
 				this->arrDesiredOutputValues[i] = arrDesiredResults[i];
@@ -108,9 +113,7 @@ class NeuralNetwork {
 		 * @see pushInputs
 		 * @see pushDesiredResults
 		 */
-		void iterate() {
-
-			if (this->arrErrorValues == 0) throw std::invalid_argument("Must exist an target array of values");
+		void iterate(char training = 0) {
 
 			// recalculates the output and errors
 			for (unsigned int i = 0; i < this->outputLayerSize; i++) {
@@ -118,18 +121,32 @@ class NeuralNetwork {
 				// Calculates the output
 				float val = this->arrOutputLayer[i]->generateOutput();
 
-				// Calculates the error
-				this->arrErrorValues[i] = val - this->arrDesiredOutputValues[i];
+				if (training) {
+					// Calculates the error
+					this->arrErrorValues[i] = val - this->arrDesiredOutputValues[i];
 
-				// Rectify the weights
-				this->arrOutputLayer[i]->rectifyWeights(0.1, this->arrErrorValues[i]);
+					// Rectify the weights
+					this->arrOutputLayer[i]->rectifyWeights(0.2, this->arrErrorValues[i]);
+				}
 			}
 		}
 
+		/**
+		 * Return the network errors values
+		 * use iterate before
+		 * @see iterate
+		 * @return network errors values
+		 */
 		float* getErrors() {
 			return this->arrErrorValues;
 		}
 
+		/**
+		 * Return the network output values
+		 * use iterate before
+		 * @see iterate
+		 * @return network output values
+		 */
 		Neuron** getOutputLayer() {
 			return this->arrOutputLayer;
 		}
@@ -165,11 +182,6 @@ class NeuralNetwork {
 		}
 
 	private:
-
-		float costFunction(float errorValue) {
-			return .5 * pow(errorValue, 2);
-		}
-
 		/**
 		 * Builds input layer
 		 * @param inputLayerSize
@@ -189,7 +201,7 @@ class NeuralNetwork {
 		 * @param amountOfInnerLayers
 		 * @param inputLayerSize
 		 */
-		void buildInnerLayer(unsigned int innerLayersSize, unsigned int amountOfInnerLayers, unsigned int inputLayerSize) {
+		void buildInnerLayer(unsigned int inputLayerSize, unsigned int innerLayersSize, unsigned int amountOfInnerLayers, float bias) {
 			// building inner layers
 			this->innerLayersSize = innerLayersSize;
 			this->amountOfInnerLayers = amountOfInnerLayers;
@@ -205,11 +217,11 @@ class NeuralNetwork {
 				for (unsigned int ni = 0; ni < innerLayersSize; ni++) {
 					// connects input layer to first inner layer
 					if (ii == 0) {
-						this->arrInnerLayers[ii][ni] = new Neuron(inputLayerSize, arrInputLayer, inputLayerSize);
+						this->arrInnerLayers[ii][ni] = new Neuron(inputLayerSize, arrInputLayer, inputLayerSize, bias);
 						continue;
 					}
 					// connects previous inner layer to next inner layer
-					this->arrInnerLayers[ii][ni] = new Neuron(innerLayersSize, this->arrInnerLayers[ii - 1], innerLayersSize);
+					this->arrInnerLayers[ii][ni] = new Neuron(innerLayersSize, this->arrInnerLayers[ii - 1], innerLayersSize, bias);
 				}
 			}
 		}
@@ -221,14 +233,14 @@ class NeuralNetwork {
 		 * @param inputLayerSize
 		 * @param innerLayersSize
 		 */
-		void buildOutputLayer(unsigned int amountOfInnerLayers, unsigned int outputLayerSize, unsigned int inputLayerSize, unsigned int innerLayersSize) {
+		void buildOutputLayer(unsigned int inputLayerSize, unsigned int innerLayersSize, unsigned int amountOfInnerLayers, unsigned int outputLayerSize, float bias) {
 			// No inner layer: Input is connected directly to output
 			if (amountOfInnerLayers <= 0) {
 				// building the output layer
 				this->outputLayerSize = outputLayerSize;
 				this->arrOutputLayer = new Neuron*[inputLayerSize];
 				for (unsigned int i = 0; i < outputLayerSize; i++) {
-					this->arrOutputLayer[i] = new Neuron(inputLayerSize, arrInputLayer, inputLayerSize);
+					this->arrOutputLayer[i] = new Neuron(inputLayerSize, arrInputLayer, inputLayerSize, bias);
 				}
 				return;
 			}
@@ -237,7 +249,7 @@ class NeuralNetwork {
 			this->outputLayerSize = outputLayerSize;
 			this->arrOutputLayer = new Neuron*[outputLayerSize];
 			for (unsigned int i = 0; i < outputLayerSize; i++) {
-				this->arrOutputLayer[i] = new Neuron(innerLayersSize, this->arrInnerLayers[amountOfInnerLayers - 1], innerLayersSize);
+				this->arrOutputLayer[i] = new Neuron(innerLayersSize, this->arrInnerLayers[amountOfInnerLayers - 1], innerLayersSize, bias);
 			}
 		}
 };

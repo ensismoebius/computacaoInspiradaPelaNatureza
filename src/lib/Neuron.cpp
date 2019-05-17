@@ -22,10 +22,8 @@
  */
 class Neuron {
 	private:
-		/**
-		 * Values must be between [1,-1]
-		 */
-		float value;
+
+		float bias;
 
 		float* arrWeights;
 		unsigned int arrWeightsSize;
@@ -34,6 +32,10 @@ class Neuron {
 		unsigned int arrInputsNeuronsSize;
 
 	public:
+		/**
+		 * Values must be between [1,-1]
+		 */
+		float value;
 
 		static const unsigned int CONST_INVALID_NEURON_VALUE = 2;
 
@@ -44,6 +46,8 @@ class Neuron {
 		 * @param value
 		 */
 		Neuron() {
+
+			this->bias = 0;
 
 			// Populate with an invalid value
 			// the actual value pushed after
@@ -56,7 +60,9 @@ class Neuron {
 			this->arrInputsNeuronsSize = 0;
 		}
 
-		Neuron(unsigned int arrWeightsSize, Neuron** arrInputsNeurons, unsigned int arrInputNeuronsSize) {
+		Neuron(unsigned int arrWeightsSize, Neuron** arrInputsNeurons, unsigned int arrInputNeuronsSize, float bias) {
+
+			this->bias = bias;
 
 			// Populate with an invalid value
 			// the actual value will be calculated
@@ -94,18 +100,21 @@ class Neuron {
 
 			// this is a regular neuron, you
 			// MUST calculate the output
-			double sum = this->calculateNeuronSum();
+			double sum = this->calculateNeuronSum() + this->bias;
+
+			// update the neuron value
 			this->value = (float) this->activationFunction(sum);
+
 			return value;
 		}
 
 		void rectifyWeights(float alpha, float error) {
+			this->bias += alpha * error;
+
 			for (unsigned int i = 0; i < this->arrWeightsSize; i++) {
-				this->arrWeights[i] += this->arrInputsNeurons[i]->getValue() * alpha * error;
+				this->arrWeights[i] += this->arrInputsNeurons[i]->value * alpha * error;
 				this->arrInputsNeurons[i]->rectifyWeights(alpha, error);
 			}
-			//for (unsigned int i = 0; i < this->arrInputsNeuronsSize; i++) {
-			//}
 		}
 
 	private:
@@ -127,7 +136,5 @@ class Neuron {
 			}
 			return sum;
 		}
-
 };
-
 #endif /* SRC_LIB_NEURON_CPP_ */

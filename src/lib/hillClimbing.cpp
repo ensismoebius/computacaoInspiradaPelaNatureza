@@ -41,7 +41,7 @@ double hillClimbing(int maxIterations, double (*fitnessFunction)(double), const 
 			bestResult = candidate;
 		}
 
-		writeFile(bestResult);
+		writeNumberToFile(bestResult);
 	}
 
 	closeFile();
@@ -74,7 +74,7 @@ double interactiveHillClimbing(int samplesAmount, int maxIterations, double (*fi
 			globalBestResult = localBestResult;
 		}
 
-		writeFile(globalBestResult);
+		writeNumberToFile(globalBestResult);
 	}
 	closeFile();
 
@@ -118,7 +118,7 @@ double stochasticHillClimbing(int maxIterations, double (*fitnessFunction)(doubl
 			bestResult = candidate;
 		}
 
-		writeFile(bestResult);
+		writeNumberToFile(bestResult);
 	}
 
 	closeFile();

@@ -17,6 +17,8 @@
 #include <fstream>
 #include <string>
 #include <cmath>
+
+#include "../lib/fileWriter.h"
 #include "../lib/NeuralNetwork.cpp"
 
 namespace neuralExperiments {
@@ -25,6 +27,8 @@ namespace neuralExperiments {
 
 			static void perform() {
 
+				openFile("/tmp/neuralExperiments_Experiment01_errors.csv");
+
 				std::cout << "\n";
 
 				std::string line;
@@ -32,11 +36,11 @@ namespace neuralExperiments {
 				std::cout << std::setprecision(6);
 
 				float bias = 0.1;
-				unsigned int maxIt = 10000;
+				unsigned int maxIt = 2690;
 				unsigned int inputSize = 4;
 				unsigned int outputSize = 3;
 				unsigned int innerLayerSize = 7;
-				unsigned int amountOfInnerLayers = 1;
+				unsigned int amountOfInnerLayers = 2;
 
 				float** arrInput = new float*[105];
 				float** arrDesiredOutput = new float*[105];
@@ -45,7 +49,6 @@ namespace neuralExperiments {
 
 				// Training network
 				std::cout << "Reading training file... \n";
-//				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisSetosa.data");
 				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTraining.data");
 				unsigned int fileItemNumber = 0;
 				while (readFile(infileTraining, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
@@ -53,19 +56,36 @@ namespace neuralExperiments {
 				}
 				infileTraining.close();
 
+				writeCharsToFile("Training errors\n");
+
 				std::cout << "Training... \n";
 				for (unsigned int i = 0; i < maxIt; i++) {
+
+					double totalError = 0;
+
 					for (unsigned int j = 0; j < fileItemNumber; j++) {
 						n->pushDesiredResults(arrDesiredOutput[j]);
 						n->pushInputs(arrInput[j]);
 						n->iterate(1);
+
+						// write all errors to file
+						for (unsigned int k = 0; k < outputSize; k++) {
+							totalError += pow(n->arrErrorValues[k], 2) / 2;
+						}
 					}
+
+					writeNumberToFile(totalError);
 				}
 
+				closeFile();
+
+				openFile("/tmp/neuralExperiments_Experiment01_results.csv");
+
 				// Validating network
+				writeCharsToFile("Validating results\n");
+
 				std::cout << "Reading validating file... \n";
 				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisValidating.data");
-//				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisSetosa.data");
 				fileItemNumber = 0;
 				while (readFile(infileValidating, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
 					fileItemNumber++;
@@ -75,34 +95,36 @@ namespace neuralExperiments {
 				// Validating
 				std::cout << "Validating... \n";
 				for (unsigned int j = 0; j < fileItemNumber; j++) {
-
 					n->pushInputs(arrInput[j]);
 					n->iterate();
-
-					std::cout << "I want " << getDataName(arrDesiredOutput[j]) << ".";
-
-					if (compareResults(arrDesiredOutput[j], n->getOutputLayer(), outputSize)) {
-						std::cout << "Success!!!\n";
-					} else {
-						std::cout << "Fail!!!\n";
-					}
+					compareResults(arrDesiredOutput[j], n->getOutputLayer(), outputSize);
 				}
 
-				// Is this smart? Lets see
-				arrInput[0][0] = 5.0;
-				arrInput[0][1] = 3.0;
-				arrInput[0][2] = 1.6;
-				arrInput[0][4] = 0.2;
+				// Testing network
+				writeCharsToFile("Testing results\n");
 
-				n->pushInputs(arrInput[0]);
-				n->iterate();
-				showResults(outputSize, n);
+				std::cout << "Reading testing file... \n";
+				std::ifstream infileTesting("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTesting.data");
+				fileItemNumber = 0;
+				while (readFile(infileTesting, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+					fileItemNumber++;
+				}
+				infileTesting.close();
+
+				// Validating
+				std::cout << "Testing... \n";
+				for (unsigned int j = 0; j < fileItemNumber; j++) {
+					n->pushInputs(arrInput[j]);
+					n->iterate();
+					compareResults(arrDesiredOutput[j], n->getOutputLayer(), outputSize);
+				}
 
 				delete n;
 				delete[] arrInput;
 				delete[] arrDesiredOutput;
 
 				infileTraining.close();
+				closeFile();
 			}
 
 		private:
@@ -162,16 +184,44 @@ namespace neuralExperiments {
 				return 0;
 			}
 
-			static float translate(float value) {
-				return value >= 0.5 ? 1 : 0;
-			}
+			static char compareResults(float* arrDesiredOutput, Neuron** networkOutput, unsigned int outputSize) {
 
-			static char compareResults(float* arrDesiredOutput, Neuron** output, unsigned int outputSize) {
+				float maxValue = -2;
+				float* arrActual = new float[outputSize];
+
 				for (unsigned int i = 0; i < outputSize; i++) {
-					if (arrDesiredOutput[i] != translate(output[i]->getValue())) {
+					if (maxValue < networkOutput[i]->value) {
+						maxValue = networkOutput[i]->value;
+					}
+				}
+
+				for (unsigned int i = 0; i < outputSize; i++) {
+					if (networkOutput[i]->value < maxValue) {
+						arrActual[i] = 0;
+					} else {
+						arrActual[i] = 1;
+					}
+				}
+
+				// target
+				writeCharsToFile(getDataName(arrDesiredOutput));
+				writeCharsToFile("\t");
+				std::cout << getDataName(arrDesiredOutput) << "\t";
+
+				// result
+				writeCharsToFile(getDataName(arrActual));
+				writeCharsToFile("\t");
+				std::cout << getDataName(arrActual) << "\t";
+
+				for (unsigned int i = 0; i < outputSize; i++) {
+					if (arrDesiredOutput[i] != arrActual[i]) {
+						writeCharsToFile("Fail\n");
+						std::cout << "Fail!!!\n";
 						return false;
 					}
 				}
+				writeCharsToFile("Success\n");
+				std::cout << "Success!!!\n";
 				return true;
 			}
 

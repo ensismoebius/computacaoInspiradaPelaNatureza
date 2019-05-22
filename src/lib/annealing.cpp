@@ -45,7 +45,7 @@ double simulated_annealing(double systemTemperature, double targetValue, double 
 			candidate = fabs(bestResult + getGaussionRandomPertubation());
 		} while (candidate > 0 && candidate > 1);
 
-		writeFile(candidate);
+		writeNumberToFile(candidate);
 
 		if ((*fitnessFunction)(candidate) < (*fitnessFunction)(bestResult)) {
 			bestResult = candidate;

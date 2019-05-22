@@ -11,8 +11,8 @@
 #include <bits/types/FILE.h>
 #include <cstdio>
 
-FILE* filewriter;
-char alreadyOpen = 0;
+static FILE* filewriter;
+static char alreadyOpen = 0;
 
 /**
  * Open a file for writing
@@ -27,11 +27,19 @@ void openFile(const char* filePath) {
 }
 
 /**
- * Write some data into the opened file
+ * Write some numeric data into the opened file
  * @param value
  */
-void writeFile(double value) {
+void writeNumberToFile(double value) {
 	fprintf(filewriter, "%lf\n", value);
+}
+
+/**
+ * Write some char data into the opened file
+ * @param value
+ */
+void writeCharsToFile(const char* value) {
+	fprintf(filewriter, "%s", value);
 }
 
 /**

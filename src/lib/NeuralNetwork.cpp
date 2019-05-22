@@ -39,6 +39,11 @@ class NeuralNetwork {
 		unsigned int outputLayerSize;
 
 		/**
+		 * Leaning rate
+		 */
+		float learningRate;
+
+		/**
 		 * The output layer
 		 */
 		Neuron** arrOutputLayer;
@@ -76,11 +81,12 @@ class NeuralNetwork {
 		 * @param amountOfInnerLayers - Amount inner ( a.k.a hidden ) layers
 		 * @param innerLayersSize - Amount of neurons at inner layers
 		 */
-		NeuralNetwork(unsigned int inputLayerSize, unsigned int outputLayerSize, unsigned int amountOfInnerLayers, unsigned int innerLayersSize, float bias) {
+		NeuralNetwork(unsigned int inputLayerSize, unsigned int outputLayerSize, unsigned int amountOfInnerLayers, unsigned int innerLayersSize, float bias, float learningRate) {
 			buildInputLayer(inputLayerSize);
 			buildInnerLayer(inputLayerSize, innerLayersSize, amountOfInnerLayers, bias);
 			buildOutputLayer(inputLayerSize, innerLayersSize, amountOfInnerLayers, outputLayerSize, bias);
 
+			this->learningRate = learningRate;
 			this->arrErrorValues = new float[outputLayerSize];
 			this->arrDesiredOutputValues = new float[outputLayerSize];
 		}
@@ -126,7 +132,7 @@ class NeuralNetwork {
 					this->arrErrorValues[i] = this->arrDesiredOutputValues[i] - val;
 
 					// Rectify the weights
-					this->arrOutputLayer[i]->rectifyWeights(0.1, this->arrErrorValues[i]);
+					this->arrOutputLayer[i]->rectifyWeights(this->learningRate, this->arrErrorValues[i]);
 				}
 			}
 		}

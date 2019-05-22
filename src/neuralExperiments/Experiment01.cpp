@@ -36,6 +36,7 @@ namespace neuralExperiments {
 				std::cout << std::setprecision(6);
 
 				float bias = 0.1;
+				float learningRate = 0.1;
 				unsigned int maxIt = 2690;
 				unsigned int inputSize = 4;
 				unsigned int outputSize = 3;
@@ -45,7 +46,7 @@ namespace neuralExperiments {
 				float** arrInput = new float*[105];
 				float** arrDesiredOutput = new float*[105];
 
-				NeuralNetwork* n = new NeuralNetwork(inputSize, outputSize, amountOfInnerLayers, innerLayerSize, bias);
+				NeuralNetwork* n = new NeuralNetwork(inputSize, outputSize, amountOfInnerLayers, innerLayerSize, bias, learningRate);
 
 				// Training network
 				std::cout << "Reading training file... \n";

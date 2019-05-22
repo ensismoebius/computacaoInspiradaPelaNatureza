@@ -29,8 +29,6 @@ namespace neuralExperiments {
 
 				openFile("/tmp/neuralExperiments_Experiment06_errors.csv");
 
-				std::cout << "\n";
-
 				std::string line;
 				std::cout << std::fixed;
 				std::cout << std::setprecision(6);
@@ -38,21 +36,21 @@ namespace neuralExperiments {
 				float bias = 0.1;
 				float learningRate = 0.1;
 				unsigned int maxIt = 2690;
-				unsigned int inputSize = 4;
+				unsigned int inputSize = 13;
 				unsigned int outputSize = 3;
 				unsigned int innerLayerSize = 7;
 				unsigned int amountOfInnerLayers = 2;
 
-				float** arrInput = new float*[105];
-				float** arrDesiredOutput = new float*[105];
+				float** arrInput = new float*[123];
+				float** arrDesiredOutput = new float*[123];
 
 				NeuralNetwork* n = new NeuralNetwork(inputSize, outputSize, amountOfInnerLayers, innerLayerSize, bias, learningRate);
 
 				// Training network
 				std::cout << "Reading training file... \n";
-				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTraining.data");
+				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/wineDataSet/wineTraining.data");
 				unsigned int fileItemNumber = 0;
-				while (readFile(infileTraining, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+				while (readFile(infileTraining, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;
 				}
 				infileTraining.close();
@@ -86,9 +84,9 @@ namespace neuralExperiments {
 				writeCharsToFile("Validating results\n");
 
 				std::cout << "Reading validating file... \n";
-				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisValidating.data");
+				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/wineDataSet/wineValidating.data");
 				fileItemNumber = 0;
-				while (readFile(infileValidating, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+				while (readFile(infileValidating, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;
 				}
 				infileValidating.close();
@@ -105,9 +103,9 @@ namespace neuralExperiments {
 				writeCharsToFile("Testing results\n");
 
 				std::cout << "Reading testing file... \n";
-				std::ifstream infileTesting("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTesting.data");
+				std::ifstream infileTesting("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/wineDataSet/wineTest.data");
 				fileItemNumber = 0;
-				while (readFile(infileTesting, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+				while (readFile(infileTesting, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;
 				}
 				infileTesting.close();
@@ -132,48 +130,66 @@ namespace neuralExperiments {
 
 			static const char* getDataName(float* arrData) {
 				if (arrData[0] == 1 && arrData[1] == 0 && arrData[2] == 0) {
-					return "Iris-setosa";
+					return "1";
 				}
 				if (arrData[0] == 0 && arrData[1] == 1 && arrData[2] == 0) {
-					return "Iris-virginica";
+					return "2";
 				}
 				if (arrData[0] == 0 && arrData[1] == 0 && arrData[2] == 1) {
-					return "Iris-versicolor";
+					return "3";
 				}
 			}
 
-			static char readFile(std::ifstream& infile, std::string& line, float**& arrInputs, float**& arrDesiredOutput, unsigned int pos, unsigned int outputSize) {
+			static char readFile(std::ifstream& infile, std::string& line, float**& arrInputs, float**& arrDesiredOutput, unsigned int pos, unsigned int outputSize, unsigned int inputSize) {
 
 				if (std::getline(infile, line)) {
 					std::istringstream iss(line);
-					float a, b, c, d;
+					float v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13;
 					char comma;
-					std::string name;
-					if (!(iss >> a >> comma >> b >> comma >> c >> comma >> d >> comma >> name)) {
+					float label;
+					if (!(iss >> label >> comma >> v1 >> comma >> v2 >> comma >> v3 >> comma >> v4 >> comma >> v5 >> comma >> v6 >> comma >> v7 >> comma >> v8 >> comma >> v9 >> comma >> v10 >> comma >> v11 >> comma >> v12 >> comma >> v13)) {
 						return 0;
 					}
 
-					arrInputs[pos] = new float[outputSize];
+					arrInputs[pos] = new float[inputSize];
 					arrDesiredOutput[pos] = new float[outputSize];
 
-					arrInputs[pos][0] = a;
-					arrInputs[pos][1] = b;
-					arrInputs[pos][2] = c;
-					arrInputs[pos][3] = d;
+					arrInputs[pos][0] = v1;
+					arrInputs[pos][1] = v2;
+					arrInputs[pos][2] = v3;
+					arrInputs[pos][3] = v4;
+					arrInputs[pos][4] = v5;
+					arrInputs[pos][5] = v6;
+					arrInputs[pos][6] = v7;
+					arrInputs[pos][7] = v8;
+					arrInputs[pos][8] = v9;
+					arrInputs[pos][9] = v10;
+					arrInputs[pos][10] = v11;
+					arrInputs[pos][11] = v12;
+					arrInputs[pos][12] = v13;
 
-					if (name.compare("Iris-setosa") == 0) {
+					// normalizing the data
+					double sum = 0;
+					for (int i = 0; i < 13; i++) {
+						sum += arrInputs[pos][i];
+					}
+					for (int i = 0; i < 13; i++) {
+						arrInputs[pos][i] /= sum;
+					}
+
+					if (label == 1) {
 						arrDesiredOutput[pos][0] = 1;
 						arrDesiredOutput[pos][1] = 0;
 						arrDesiredOutput[pos][2] = 0;
 						return 1;
 					}
-					if (name.compare("Iris-virginica") == 0) {
+					if (label == 2) {
 						arrDesiredOutput[pos][0] = 0;
 						arrDesiredOutput[pos][1] = 1;
 						arrDesiredOutput[pos][2] = 0;
 						return 1;
 					}
-					if (name.compare("Iris-versicolor") == 0) {
+					if (label == 3) {
 						arrDesiredOutput[pos][0] = 0;
 						arrDesiredOutput[pos][1] = 0;
 						arrDesiredOutput[pos][2] = 1;

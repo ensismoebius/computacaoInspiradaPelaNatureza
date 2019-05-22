@@ -14,6 +14,14 @@
  */
 
 #include "neuralExperiments/Experiment01.cpp"
+#include "neuralExperiments/Experiment02.cpp"
+#include "neuralExperiments/Experiment03.cpp"
+#include "neuralExperiments/Experiment04.cpp"
+
+#include "neuralExperiments/Experiment05.cpp"
+#include "neuralExperiments/Experiment06.cpp"
+#include "neuralExperiments/Experiment07.cpp"
+#include "neuralExperiments/Experiment08.cpp"
 
 #include "geneticExperiments/Experiment01.cpp"
 #include "geneticExperiments/Experiment02.cpp"
@@ -49,7 +57,14 @@ void doAnnealingExperiments() {
 
 void doNeuralExperiments() {
 	// neural network experiments
-	neuralExperiments::Experiment01::perform();
+//	neuralExperiments::Experiment01::perform();
+//	neuralExperiments::Experiment02::perform();
+//	neuralExperiments::Experiment03::perform();
+//	neuralExperiments::Experiment04::perform();
+	neuralExperiments::Experiment05::perform();
+//	neuralExperiments::Experiment06::perform();
+//	neuralExperiments::Experiment07::perform();
+//	neuralExperiments::Experiment08::perform();
 }
 
 /**

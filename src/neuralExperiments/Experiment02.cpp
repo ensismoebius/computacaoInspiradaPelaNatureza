@@ -29,8 +29,6 @@ namespace neuralExperiments {
 
 				openFile("/tmp/neuralExperiments_Experiment02_errors.csv");
 
-				std::cout << "\n";
-
 				std::string line;
 				std::cout << std::fixed;
 				std::cout << std::setprecision(6);
@@ -52,7 +50,7 @@ namespace neuralExperiments {
 				std::cout << "Reading training file... \n";
 				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTraining.data");
 				unsigned int fileItemNumber = 0;
-				while (readFile(infileTraining, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+				while (readFile(infileTraining, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;
 				}
 				infileTraining.close();
@@ -88,7 +86,7 @@ namespace neuralExperiments {
 				std::cout << "Reading validating file... \n";
 				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisValidating.data");
 				fileItemNumber = 0;
-				while (readFile(infileValidating, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+				while (readFile(infileValidating, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;
 				}
 				infileValidating.close();
@@ -107,7 +105,7 @@ namespace neuralExperiments {
 				std::cout << "Reading testing file... \n";
 				std::ifstream infileTesting("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTesting.data");
 				fileItemNumber = 0;
-				while (readFile(infileTesting, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize)) {
+				while (readFile(infileTesting, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;
 				}
 				infileTesting.close();
@@ -142,7 +140,7 @@ namespace neuralExperiments {
 				}
 			}
 
-			static char readFile(std::ifstream& infile, std::string& line, float**& arrInputs, float**& arrDesiredOutput, unsigned int pos, unsigned int outputSize) {
+			static char readFile(std::ifstream& infile, std::string& line, float**& arrInputs, float**& arrDesiredOutput, unsigned int pos, unsigned int outputSize, unsigned int inputSize) {
 
 				if (std::getline(infile, line)) {
 					std::istringstream iss(line);
@@ -153,7 +151,7 @@ namespace neuralExperiments {
 						return 0;
 					}
 
-					arrInputs[pos] = new float[outputSize];
+					arrInputs[pos] = new float[inputSize];
 					arrDesiredOutput[pos] = new float[outputSize];
 
 					arrInputs[pos][0] = a;

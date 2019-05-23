@@ -23,11 +23,20 @@
 class Neuron {
 	private:
 
+		/**
+		 * The bias for this neuron
+		 */
 		float bias;
 
+		/**
+		 * The weights for the connection with input neurons
+		 */
 		float* arrWeights;
 		unsigned int arrWeightsSize;
 
+		/**
+		 * The input neurons
+		 */
 		Neuron** arrInputsNeurons;
 		unsigned int arrInputsNeuronsSize;
 
@@ -37,6 +46,10 @@ class Neuron {
 		 */
 		float value;
 
+		/**
+		 * Used to initialize a neurons without value
+		 * that are going to be updated after some iteration
+		 */
 		static const unsigned int CONST_INVALID_NEURON_VALUE = 2;
 
 		/**
@@ -47,6 +60,7 @@ class Neuron {
 		 */
 		Neuron() {
 
+			// bias for input layer
 			this->bias = 1;
 
 			// Populate with an invalid value
@@ -62,6 +76,7 @@ class Neuron {
 
 		Neuron(unsigned int arrWeightsSize, Neuron** arrInputsNeurons, unsigned int arrInputNeuronsSize, float bias) {
 
+			// custom bias for another types of neurons
 			this->bias = bias;
 
 			// Populate with an invalid value
@@ -91,6 +106,14 @@ class Neuron {
 			return this->value;
 		}
 
+		/**
+		 * If it is just an input neuron returns its
+		 * current value, otherwise, do a bunch of
+		 * calculations (including in the neurons
+		 * linked) and, just after this, returns
+		 * the calculated value
+		 * @return the neuron value
+		 */
 		float generateOutput() {
 
 			// this is just an input neuron
@@ -108,6 +131,12 @@ class Neuron {
 			return value;
 		}
 
+		/**
+		 * Updates the weights between the neurons and
+		 * the linked ones
+		 * @param alpha
+		 * @param error
+		 */
 		void rectifyWeights(float alpha, float error) {
 			this->bias += alpha * error;
 
@@ -119,16 +148,31 @@ class Neuron {
 
 	private:
 
+		/**
+		 * Initializes the weights between the current
+		 * neurons and the linked ones
+		 * @param arrWeights
+		 * @param arrWeightsSize
+		 */
 		void initializeWeights(float*& arrWeights, unsigned int arrWeightsSize) {
 			while (arrWeightsSize--) {
 				arrWeights[arrWeightsSize] = getGaussionRandomPertubation();
 			}
 		}
 
+		/**
+		 * The activation function
+		 * @param net
+		 * @return calculated value
+		 */
 		double activationFunction(double net) {
 			return (1.0 / (1.0 + exp(-net)));
 		}
 
+		/**
+		 * Sum up the inputs with their respective weights
+		 * @return
+		 */
 		double calculateNeuronSum() {
 			double sum = 0;
 			for (unsigned int i = 0; i < this->arrWeightsSize; i++) {

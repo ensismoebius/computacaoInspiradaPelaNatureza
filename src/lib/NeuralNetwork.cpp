@@ -135,19 +135,6 @@ class NeuralNetwork {
 					this->arrOutputLayer[i]->rectifyWeights(this->learningRate, this->arrErrorValues[i]);
 				}
 			}
-
-//			sofMax(arrOutputLayer, this->outputLayerSize);
-		}
-
-		void sofMax(Neuron**& arrOutput, int outputSize) {
-
-			double sum = 0;
-			for (int i = 0; i < outputSize; i++) {
-				sum += exp(arrOutput[i]->value);
-			}
-			for (int i = 0; i < outputSize; i++) {
-				arrOutput[i]->value = exp(arrOutput[i]->value) / sum;
-			}
 		}
 
 		/**

@@ -57,13 +57,13 @@ void doAnnealingExperiments() {
 
 void doNeuralExperiments() {
 	// neural network experiments
-//	neuralExperiments::Experiment01::perform();
-//	neuralExperiments::Experiment02::perform();
-//	neuralExperiments::Experiment03::perform();
-//	neuralExperiments::Experiment04::perform();
-//	neuralExperiments::Experiment05::perform();
-//	neuralExperiments::Experiment06::perform();
-//	neuralExperiments::Experiment07::perform();
+	neuralExperiments::Experiment01::perform();
+	neuralExperiments::Experiment02::perform();
+	neuralExperiments::Experiment03::perform();
+	neuralExperiments::Experiment04::perform();
+	neuralExperiments::Experiment05::perform();
+	neuralExperiments::Experiment06::perform();
+	neuralExperiments::Experiment07::perform();
 	neuralExperiments::Experiment08::perform();
 }
 
@@ -72,14 +72,13 @@ void doNeuralExperiments() {
  */
 int main() {
 
-//	// genetic algorithms
-//	doGeneticExperiments();
-//	// hill climbing algorithms
-//	doHillClimbingExperiments();
-//	// annealing algorithms
-//	doAnnealingExperiments();
-
-// neural network
+	// genetic algorithms
+	doGeneticExperiments();
+	// hill climbing algorithms
+	doHillClimbingExperiments();
+	// annealing algorithms
+	doAnnealingExperiments();
+	// neural network
 	doNeuralExperiments();
 
 	return 0;

@@ -33,13 +33,13 @@ namespace neuralExperiments {
 				std::cout << std::fixed;
 				std::cout << std::setprecision(6);
 
-				float bias = 0.1;
+				float bias = 1;
 				float learningRate = 0.1;
-				unsigned int maxIt = 2690;
+				unsigned int maxIt = 10000;
 				unsigned int inputSize = 13;
 				unsigned int outputSize = 3;
-				unsigned int innerLayerSize = 7;
-				unsigned int amountOfInnerLayers = 2;
+				unsigned int innerLayerSize = 0;
+				unsigned int amountOfInnerLayers = 0;
 
 				float** arrInput = new float*[123];
 				float** arrDesiredOutput = new float*[123];

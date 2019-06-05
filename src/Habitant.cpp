@@ -10,8 +10,22 @@
 
 class Habitant {
 	public:
+		/**
+		 * Best fitness value
+		 */
 		inline static double bestValue;
+
+		/**
+		 * Best coordinates
+		 */
 		inline static double* bestCoordnates;
+
+		/**
+		 * Fitness function
+		 * @param the fitness function
+		 * @return fitness value (the lower the better)
+		 */
+		inline static double (*fitnessFunction)(double*, unsigned int);
 
 		unsigned int coordSize;
 
@@ -21,17 +35,15 @@ class Habitant {
 		double myOptimalValue;
 		double* myOptimalCoords;
 
-		double mass;
 		double velocity;
 
 		Habitant** neighbors;
 
 		// Constructor definition
-		Habitant(unsigned int amountOfDimensions, double mass, Habitant** neighbors) {
+		Habitant(unsigned int amountOfDimensions, Habitant** neighbors, double (*fitnessFunction)(double*, unsigned int)) {
 
-			this->mass = mass;
-			this->velocity = 0;
 			this->coordSize = amountOfDimensions;
+			this->velocity = getUniformDistributedRandomPertubation();
 
 			this->neighbors = neighbors;
 			this->currentCoords = new double[amountOfDimensions];
@@ -39,16 +51,38 @@ class Habitant {
 
 			// dn stands for "dimension number"
 			for (unsigned int dn = 0; dn < amountOfDimensions; dn++) {
-				this->currentCoords[dn] = getUniformDistributedRandomPertubation();
-				this->myOptimalCoords[dn] = getUniformDistributedRandomPertubation();
+				this->myOptimalCoords[dn] = this->currentCoords[dn] = getUniformDistributedRandomPertubation();
 			}
 
-			this->currentValue = this->fitnessFuction(this->currentCoords, this->coordSize);
+			if (bestCoordnates == 0) {
+				Habitant::bestCoordnates = new double[amountOfDimensions];
+				Habitant::bestValue = std::numeric_limits<double>::max();
+				Habitant::fitnessFunction = fitnessFunction;
+			}
 
-			bestValue = 0;
+			this->currentValue = this->evaluate(this->currentCoords, this->coordSize);
 		}
 
-		double fitnessFuction(double* coords, unsigned int coordsSize) {
-			return coords[coordsSize - 1] * coords[coordsSize - 2];
+		double evaluate(double* coords, unsigned int coordsSize) {
+
+			double value = (*this->fitnessFunction)(coords, coordsSize);
+
+			if (value < bestValue) {
+				bestValue = value;
+
+				for (unsigned int i = 0; i < this->coordSize; i++) {
+					bestCoordnates[i] = coords[i];
+				}
+			}
+
+			if (value < this->myOptimalValue) {
+				this->myOptimalValue = value;
+
+				for (unsigned int i = 0; i < this->coordSize; i++) {
+					this->myOptimalCoords[i] = coords[i];
+				}
+			}
+
+			return value;
 		}
 };

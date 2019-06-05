@@ -22,10 +22,12 @@ class PSO {
 				swarms[si] = new Habitant*[amountOfPopulationPerSwarm];
 
 				for (unsigned int pi; pi < amountOfSwarms; pi++) {
-					swarms[si][pi] = new Habitant(amountOfDimensions, 1, swarms[si]);
+					swarms[si][pi] = new Habitant(amountOfDimensions, swarms[si], fitnessFunction);
 				}
 			}
+		}
 
+		static double fitnessFunction(double* values, unsigned int valuesSize) {
+			return values[valuesSize - 1] * values[valuesSize - 2];
 		}
 };
-

@@ -9,6 +9,10 @@
 #include "PSOLimits.cpp"
 
 #include <iostream>
+
+#ifndef SRC_LIB_PSO_CPP_
+#define SRC_LIB_PSO_CPP_
+
 class PSO {
 	public:
 		PSOParticle** swarm;
@@ -48,3 +52,4 @@ class PSO {
 			}
 		}
 };
+#endif /* SRC_LIB_PSO_CPP_ */

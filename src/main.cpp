@@ -38,6 +38,7 @@
 #include "hillClimbingAnnealingExperiments/Experiment05.cpp"
 
 #include "psoExperiments/Experiment01.cpp"
+#include "psoExperiments/Experiment02.cpp"
 
 void doGeneticExperiments() {
 	// genetic algorithms
@@ -74,7 +75,8 @@ void doNeuralExperiments() {
 
 void doPsoExperiments() {
 	// pso experiments
-	PSOExperiments::Experiment01::perform();
+//	PSOExperiments::Experiment01::perform();
+	PSOExperiments::Experiment02::perform();
 }
 
 /**

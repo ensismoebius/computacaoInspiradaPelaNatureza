@@ -12,6 +12,9 @@
 #include "PSOLimits.cpp"
 #include "PSONeighborhood.cpp"
 
+#ifndef SRC_LIB_PSOPARTICLE_CPP_
+#define SRC_LIB_PSOPARTICLE_CPP_
+
 class PSOParticle {
 	public:
 		inline static PSOLimits* coordLimits;
@@ -170,3 +173,4 @@ class PSOParticle {
 			return velocity;
 		}
 };
+#endif /* SRC_LIB_PSOPARTICLE_CPP_ */

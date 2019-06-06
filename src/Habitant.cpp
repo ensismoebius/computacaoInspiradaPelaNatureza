@@ -6,6 +6,8 @@
  */
 
 #include <limits>
+#include <random>
+
 #include "lib/gaussianRandom.h"
 
 class Habitant {
@@ -37,15 +39,18 @@ class Habitant {
 
 		double velocity;
 
-		Habitant** neighbors;
+		Habitant** population;
+
+		unsigned int* neighborsIndexes;
 
 		// Constructor definition
-		Habitant(unsigned int amountOfDimensions, Habitant** neighbors, double (*fitnessFunction)(double*, unsigned int)) {
+		Habitant(unsigned int amountOfDimensions, double minVel, double maxVel, Habitant** population, unsigned int* neighborsIndexes, double (*fitnessFunction)(double*, unsigned int)) {
 
 			this->coordSize = amountOfDimensions;
-			this->velocity = getUniformDistributedRandomPertubation();
+			this->velocity = calculateInitialVelocity(minVel, maxVel);
 
-			this->neighbors = neighbors;
+			this->population = population;
+			this->neighborsIndexes = neighborsIndexes;
 			this->currentCoords = new double[amountOfDimensions];
 			this->myOptimalCoords = new double[amountOfDimensions];
 
@@ -63,6 +68,11 @@ class Habitant {
 			this->currentValue = this->evaluate(this->currentCoords, this->coordSize);
 		}
 
+		void evaluate() {
+			this->currentValue = this->evaluate(this->currentCoords, this->coordSize);
+		}
+
+	private:
 		double evaluate(double* coords, unsigned int coordsSize) {
 
 			double value = (*this->fitnessFunction)(coords, coordsSize);
@@ -84,5 +94,16 @@ class Habitant {
 			}
 
 			return value;
+		}
+
+		double calculateInitialVelocity(double minVel, double maxVel) {
+
+			double velocity = minVel + (getUniformDistributedRandomPertubation() / RAND_MAX) * (maxVel - minVel);
+
+			while (velocity < minVel || velocity > maxVel) {
+				velocity = minVel + (getUniformDistributedRandomPertubation() / RAND_MAX) * (maxVel - minVel);
+			}
+
+			return velocity;
 		}
 };

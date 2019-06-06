@@ -37,7 +37,7 @@
 #include "hillClimbingAnnealingExperiments/Experiment04.cpp"
 #include "hillClimbingAnnealingExperiments/Experiment05.cpp"
 
-#include "psoExperiments/Experiment01.cpp";
+#include "psoExperiments/Experiment01.cpp"
 
 void doGeneticExperiments() {
 	// genetic algorithms

@@ -12,14 +12,15 @@ class PSO {
 	public:
 		PSOParticle** swarm;
 
-		unsigned int amountOfDimensions;
+		int amountOfDimensions;
 		unsigned int amountOfPopulation;
 
 		double* coordLimits;
-		unsigned int amountOfSetedLimits = 0;
+		int amountOfSetedLimits;
 
-		PSO(double (*fitnessFunction)(double*, unsigned int), unsigned int amountOfPopulation, unsigned int amountOfDimensions, double minSpeed, double maxSpeed, double selfConfidence, double groupConfidence) {
+		PSO(double (*fitnessFunction)(double*, unsigned int), unsigned int amountOfPopulation, int amountOfDimensions, double minSpeed, double maxSpeed, double selfConfidence, double groupConfidence) {
 
+			this->amountOfSetedLimits = -1;
 			this->amountOfPopulation = amountOfPopulation;
 			this->amountOfDimensions = amountOfDimensions;
 
@@ -27,8 +28,8 @@ class PSO {
 
 			// default for limits: No limits!!!
 			this->coordLimits = new double[this->amountOfDimensions * 2];
-			for (unsigned int li = 0; li < this->amountOfDimensions * 2; li++) {
-				this->coordLimits[li] = std::numeric_limits<double>::max();
+			for (int li = 0; li < this->amountOfDimensions * 2; li++) {
+				this->coordLimits[li] = std::numeric_limits<double>::max() * pow(-1, li);
 			}
 
 			// Creates the points and its respective neighborhoods

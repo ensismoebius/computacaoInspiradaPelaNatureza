@@ -30,7 +30,7 @@ namespace PSOExperiments {
 			static constexpr double selfConfidence = 1.55;
 			static constexpr double groupConfidence = 2.55;
 
-			static constexpr unsigned int amountOfDimensions = 1;
+			static constexpr int amountOfDimensions = 1;
 			static constexpr unsigned int amountOfPopulation = 1;
 
 			static double fitnessFunction(double* values, unsigned int valuesSize) {

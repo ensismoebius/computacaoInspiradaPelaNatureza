@@ -139,6 +139,8 @@ namespace neuralExperiments {
 				if (arrData[0] == 0 && arrData[1] == 0 && arrData[2] == 1) {
 					return "Iris-versicolor";
 				}
+
+				return "";
 			}
 
 			static char readFile(std::ifstream& infile, std::string& line, float**& arrInputs, float**& arrDesiredOutput, unsigned int pos, unsigned int outputSize, unsigned int inputSize) {

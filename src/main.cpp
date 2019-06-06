@@ -13,9 +13,9 @@
  * Peace, love and anarchism for everyone!!
  */
 
-//		static double fitnessFunction(double* values, unsigned int valuesSize) {
-//			return values[valuesSize - 1] * values[valuesSize - 1];
-//		}
+#include "psoExperiments/Experiment01.cpp"
+#include "psoExperiments/Experiment02.cpp"
+
 #include "neuralExperiments/Experiment01.cpp"
 #include "neuralExperiments/Experiment02.cpp"
 #include "neuralExperiments/Experiment03.cpp"
@@ -36,9 +36,6 @@
 #include "hillClimbingAnnealingExperiments/Experiment03.cpp"
 #include "hillClimbingAnnealingExperiments/Experiment04.cpp"
 #include "hillClimbingAnnealingExperiments/Experiment05.cpp"
-
-#include "psoExperiments/Experiment01.cpp"
-#include "psoExperiments/Experiment02.cpp"
 
 void doGeneticExperiments() {
 	// genetic algorithms
@@ -75,7 +72,7 @@ void doNeuralExperiments() {
 
 void doPsoExperiments() {
 	// pso experiments
-//	PSOExperiments::Experiment01::perform();
+	PSOExperiments::Experiment01::perform();
 	PSOExperiments::Experiment02::perform();
 }
 
@@ -84,14 +81,14 @@ void doPsoExperiments() {
  */
 int main() {
 
-//	// genetic algorithms
-//	doGeneticExperiments();
-//	// hill climbing algorithms
-//	doHillClimbingExperiments();
-//	// annealing algorithms
-//	doAnnealingExperiments();
-//	// neural network
-//	doNeuralExperiments();
+	// genetic algorithms
+	doGeneticExperiments();
+	// hill climbing algorithms
+	doHillClimbingExperiments();
+	// annealing algorithms
+	doAnnealingExperiments();
+	// neural network
+	doNeuralExperiments();
 	// pso experiments
 	doPsoExperiments();
 

@@ -57,9 +57,11 @@ namespace PSOExperiments {
 
 				// openFile("/tmp/PSOExperiments_Experiment01.csv");
 
-				PSO* pso = new PSO(fitnessFunction, amountOfPopulation, amountOfDimensions, minSpeed, maxSpeed, selfConfidence, groupConfidence);
-				pso->addLimits(-7, 7);
-				pso->simulate(1000, printFunction);
+				PSOLimits* limits = new PSOLimits(amountOfDimensions);
+				limits->addLimits(-7, 7);
+
+				PSO* pso = new PSO(fitnessFunction, amountOfPopulation, amountOfDimensions, minSpeed, maxSpeed, selfConfidence, groupConfidence, limits);
+				pso->simulate(100000, printFunction);
 
 				// closeFile();
 			}

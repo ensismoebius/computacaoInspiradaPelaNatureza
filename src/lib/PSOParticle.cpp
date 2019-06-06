@@ -9,11 +9,12 @@
 #include <limits>
 
 #include "gaussianRandom.h"
+#include "PSOLimits.cpp"
 #include "PSONeighborhood.cpp"
 
 class PSOParticle {
 	public:
-		inline static double* coordLimits;
+		inline static PSOLimits* coordLimits;
 
 		inline static double minVel;
 		inline static double maxVel;
@@ -46,7 +47,7 @@ class PSOParticle {
 		PSONeighborhood* neighborhood;
 
 		// Constructor definition
-		PSOParticle(unsigned int amountOfDimensions, double minVel, double maxVel, double selfConfidence, double groupConfidence, PSOParticle** population, PSONeighborhood* neighbors, double* coordLimits, double (*fitnessFunction)(double*, unsigned int)) {
+		PSOParticle(unsigned int amountOfDimensions, double minVel, double maxVel, double selfConfidence, double groupConfidence, PSOParticle** population, PSONeighborhood* neighbors, PSOLimits* limits, double (*fitnessFunction)(double*, unsigned int)) {
 
 			this->myBestValue = std::numeric_limits<double>::max();
 			this->coordSize = amountOfDimensions;
@@ -55,7 +56,7 @@ class PSOParticle {
 			if (PSOParticle::fitnessFunction == 0) {
 
 				PSOParticle::fitnessFunction = fitnessFunction;
-				PSOParticle::coordLimits = new double[this->coordSize];
+				PSOParticle::coordLimits = limits;
 
 				PSOParticle::minVel = minVel;
 				PSOParticle::maxVel = maxVel;
@@ -80,16 +81,16 @@ class PSOParticle {
 
 			// dn stands for "dimension number"
 			for (unsigned int dn = 0; dn < this->coordSize; dn++) {
-				this->currentCoords[dn] = PSOParticle::coordLimits[dn * 2] * getUniformDistributedRandomPertubation() / (double) RAND_MAX;
+				this->currentCoords[dn] = PSOParticle::coordLimits->coordLimits[dn * 2] * getUniformDistributedRandomPertubation() / (double) RAND_MAX;
 
 				// verify against upper limit
-				if (this->currentCoords[dn] > PSOParticle::coordLimits[dn * 2]) {
-					this->currentCoords[dn] = PSOParticle::coordLimits[dn * 2];
+				if (this->currentCoords[dn] > PSOParticle::coordLimits->coordLimits[dn * 2]) {
+					this->currentCoords[dn] = PSOParticle::coordLimits->coordLimits[dn * 2];
 				}
 
 				// verify against lower limit
-				if (this->currentCoords[dn] < PSOParticle::coordLimits[dn * 2 + 1]) {
-					this->myBestCoords[dn] = this->currentCoords[dn] = PSOParticle::coordLimits[dn * 2 + 1];
+				if (this->currentCoords[dn] < PSOParticle::coordLimits->coordLimits[dn * 2 + 1]) {
+					this->myBestCoords[dn] = this->currentCoords[dn] = PSOParticle::coordLimits->coordLimits[dn * 2 + 1];
 				}
 			}
 
@@ -117,11 +118,11 @@ class PSOParticle {
 			for (unsigned int i = 0; i < this->coordSize; i++) {
 				this->currentCoords[i] += this->velocity[i];
 
-				if (this->currentCoords[i] > PSOParticle::coordLimits[i]) {
-					this->currentCoords[i] = PSOParticle::coordLimits[i];
+				if (this->currentCoords[i] > PSOParticle::coordLimits->coordLimits[i]) {
+					this->currentCoords[i] = PSOParticle::coordLimits->coordLimits[i];
 				}
-				if (this->currentCoords[i] < PSOParticle::coordLimits[i + 1]) {
-					this->currentCoords[i] = PSOParticle::coordLimits[i + 1];
+				if (this->currentCoords[i] < PSOParticle::coordLimits->coordLimits[i + 1]) {
+					this->currentCoords[i] = PSOParticle::coordLimits->coordLimits[i + 1];
 				}
 			}
 		}

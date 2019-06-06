@@ -81,14 +81,14 @@ void doPsoExperiments() {
  */
 int main() {
 
-	// genetic algorithms
-	doGeneticExperiments();
-	// hill climbing algorithms
-	doHillClimbingExperiments();
-	// annealing algorithms
-	doAnnealingExperiments();
-	// neural network
-	doNeuralExperiments();
+//	// genetic algorithms
+//	doGeneticExperiments();
+//	// hill climbing algorithms
+//	doHillClimbingExperiments();
+//	// annealing algorithms
+//	doAnnealingExperiments();
+//	// neural network
+//	doNeuralExperiments();
 	// pso experiments
 	doPsoExperiments();
 

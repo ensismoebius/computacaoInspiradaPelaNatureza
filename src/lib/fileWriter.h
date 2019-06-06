@@ -12,5 +12,7 @@ void closeFile();
 void writeNumberToFile(double value);
 void writeCharsToFile(const char* value);
 void openFile(const char* filePath);
+void writeNewlineToFile();
+void writeNumberToFileAtSameLine(double value);
 
 #endif /* SRC_LIB_FILEWRITER_H_ */

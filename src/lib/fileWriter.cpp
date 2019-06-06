@@ -35,6 +35,22 @@ void writeNumberToFile(double value) {
 }
 
 /**
+ * Write some numeric data in the same line into the opened file
+ * @param value
+ */
+void writeNumberToFileAtSameLine(double value) {
+	fprintf(filewriter, "%lf", value);
+}
+
+/**
+ * Write a new line into the opened file
+ * @param value
+ */
+void writeNewlineToFile() {
+	fprintf(filewriter, "\n");
+}
+
+/**
  * Write some char data into the opened file
  * @param value
  */

@@ -34,7 +34,7 @@ class PSO {
 			}
 		}
 
-		void simulate(unsigned int maxIterations, void (*printFunction)(double, double*)) {
+		void simulate(unsigned int maxIterations, void (*printFunction)(double, double*, double, double*)) {
 
 			// i stands for Iterations
 			for (unsigned int i = 0; i < maxIterations; i++) {
@@ -47,7 +47,7 @@ class PSO {
 					swarm[pi]->evaluate();
 					swarm[pi]->updateSpeed();
 					swarm[pi]->updateLocation();
-					(*printFunction)(swarm[pi]->neighborhood->bestNeighborValue, swarm[pi]->neighborhood->bestNeighborCoordinates);
+					(*printFunction)(swarm[pi]->neighborhood->bestNeighborValue, swarm[pi]->neighborhood->bestNeighborCoordinates, swarm[pi]->fitnessValue, swarm[pi]->currentCoords);
 				}
 			}
 		}

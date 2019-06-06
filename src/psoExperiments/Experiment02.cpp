@@ -43,7 +43,9 @@ namespace PSOExperiments {
 				return pow(1 - x, 2) + 100 * pow(y - pow(x, 2), 2);
 			}
 
-			static void printFunction(double bestResult, double* bestCoordinates) {
+			static void printFunction(double bestResult, double* bestCoordinates, double result, double* coordinates) {
+
+				(void) coordinates;
 
 				std::cout << "Best value: " << bestResult << std::endl;
 
@@ -52,7 +54,10 @@ namespace PSOExperiments {
 				}
 				std::cout << std::endl;
 
-				// writeCharsToFile("Training errors\n");
+				writeNumberToFileAtSameLine(bestResult);
+				writeCharsToFile("\t");
+				writeNumberToFileAtSameLine(result);
+				writeNewlineToFile();
 			}
 
 			static void perform() {
@@ -61,7 +66,7 @@ namespace PSOExperiments {
 				std::cout << std::fixed;
 				std::cout << std::setprecision(6);
 
-				// openFile("/tmp/PSOExperiments_Experiment01.csv");
+				openFile("/tmp/PSOExperiments_Experiment01.csv");
 
 				PSOLimits* limits = new PSOLimits(amountOfDimensions);
 				limits->addLimits(-5, 5);
@@ -70,7 +75,7 @@ namespace PSOExperiments {
 				PSO* pso = new PSO(fitnessFunction, amountOfPopulation, amountOfDimensions, minSpeed, maxSpeed, selfConfidence, groupConfidence, limits);
 				pso->simulate(1000, printFunction);
 
-				// closeFile();
+				closeFile();
 			}
 	};
 }

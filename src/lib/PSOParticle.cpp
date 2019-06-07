@@ -56,7 +56,7 @@ class PSOParticle {
 			this->coordSize = amountOfDimensions;
 			this->neighborhood = neighbors;
 
-			if (PSOParticle::fitnessFunction == 0) {
+			if (PSOParticle::coordLimits != limits) {
 
 				PSOParticle::fitnessFunction = fitnessFunction;
 				PSOParticle::coordLimits = limits;
@@ -96,6 +96,10 @@ class PSOParticle {
 		}
 
 		~PSOParticle() {
+
+			delete[] PSOParticle::arrSelfConfidence;
+			delete[] PSOParticle::arrGroupConfidence;
+
 			delete this->neighborhood;
 
 			delete[] this->velocity;

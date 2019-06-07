@@ -73,7 +73,7 @@ void doNeuralExperiments() {
 void doPsoExperiments() {
 	// pso experiments
 	PSOExperiments::Experiment01::perform();
-	//PSOExperiments::Experiment02::perform();
+	PSOExperiments::Experiment02::perform();
 }
 
 /**

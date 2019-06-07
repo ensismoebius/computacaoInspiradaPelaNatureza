@@ -77,6 +77,7 @@ namespace PSOExperiments {
 
 				closeFile();
 
+				delete limits;
 				delete pso;
 			}
 	};

@@ -69,11 +69,6 @@ class PSOParticle {
 
 				PSOParticle::arrSelfConfidence = new double[this->coordSize];
 				PSOParticle::arrGroupConfidence = new double[this->coordSize];
-
-				// The limits are the double of the coordinates size
-				for (unsigned int i = 0; i < this->coordSize * 2; i++) {
-					PSOParticle::coordLimits[i] = coordLimits[i];
-				}
 			}
 
 			this->velocity = calculateInitialVelocity(minVel, maxVel);
@@ -98,6 +93,14 @@ class PSOParticle {
 			}
 
 			this->evaluate(this->currentCoords, this->coordSize);
+		}
+
+		~PSOParticle() {
+			delete this->neighborhood;
+
+			delete[] this->velocity;
+			delete[] this->myBestCoords;
+			delete[] this->currentCoords;
 		}
 
 		void evaluate() {

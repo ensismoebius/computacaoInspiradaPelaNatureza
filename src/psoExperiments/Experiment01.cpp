@@ -67,6 +67,8 @@ namespace PSOExperiments {
 				pso->simulate(1000, printFunction);
 
 //				closeFile();
+
+				delete pso;
 			}
 	};
 }

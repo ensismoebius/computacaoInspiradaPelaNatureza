@@ -25,10 +25,13 @@ class PSOLimits {
 			this->coordLimits = new double[this->amountOfLimits];
 
 			// default for limits: No limits!!!
-			this->coordLimits = new double[amountOfDimensions * 2];
-			for (unsigned int li = 0; li < amountOfDimensions * 2; li++) {
+			for (int li = 0; li < this->amountOfLimits; li++) {
 				this->coordLimits[li] = std::numeric_limits<double>::max() * pow(-1, li);
 			}
+		}
+
+		~PSOLimits() {
+			delete[] this->coordLimits;
 		}
 
 		void addLimits(double lowerLimit, double upperLimit) {
@@ -39,6 +42,7 @@ class PSOLimits {
 				exit(1);
 				return;
 			}
+
 			// checks if upperLimit is bigger than lowerLimit
 			if (upperLimit < lowerLimit) {
 				std::cout << "upperLimit must be bigger than lowerLimit" << std::endl;

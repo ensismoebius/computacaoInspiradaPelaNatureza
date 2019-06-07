@@ -25,13 +25,20 @@ class PSO {
 			this->amountOfPopulation = amountOfPopulation;
 			this->amountOfDimensions = amountOfDimensions;
 
-			swarm = new PSOParticle*[this->amountOfPopulation];
+			this->swarm = new PSOParticle*[this->amountOfPopulation];
 
 			// Creates the points and its respective neighborhoods
 			for (unsigned int pi = 0; pi < this->amountOfPopulation; pi++) {
 				PSONeighborhood* neighborhood = new PSONeighborhood(this->amountOfPopulation, this->amountOfDimensions, pi);
 				this->swarm[pi] = new PSOParticle(this->amountOfDimensions, minSpeed, maxSpeed, selfConfidence, groupConfidence, this->swarm, neighborhood, limits, fitnessFunction);
 			}
+		}
+
+		~PSO() {
+			for (unsigned int pi = 0; pi < this->amountOfPopulation; pi++) {
+				delete this->swarm[pi];
+			}
+			delete[] this->swarm;
 		}
 
 		void simulate(unsigned int maxIterations, void (*printFunction)(double, double*, double, double*)) {

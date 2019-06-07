@@ -41,6 +41,11 @@ class PSONeighborhood {
 			}
 		}
 
+		~PSONeighborhood() {
+			delete[] this->indexes;
+			delete[] this->bestNeighborCoordinates;
+		}
+
 		void setMyValue(double value, double* coordinates) {
 			if (value < this->bestNeighborValue) {
 				this->bestNeighborValue = value;

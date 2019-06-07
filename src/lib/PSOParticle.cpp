@@ -56,6 +56,7 @@ class PSOParticle {
 			this->coordSize = amountOfDimensions;
 			this->neighborhood = neighbors;
 
+			// just executes it if a new set of static values are provided
 			if (PSOParticle::coordLimits != limits) {
 
 				PSOParticle::fitnessFunction = fitnessFunction;
@@ -67,7 +68,9 @@ class PSOParticle {
 				PSOParticle::selfConfidence = selfConfidence;
 				PSOParticle::groupConfidence = groupConfidence;
 
+				delete[] PSOParticle::arrSelfConfidence;
 				PSOParticle::arrSelfConfidence = new double[this->coordSize];
+				delete[] PSOParticle::arrGroupConfidence;
 				PSOParticle::arrGroupConfidence = new double[this->coordSize];
 			}
 
@@ -96,9 +99,6 @@ class PSOParticle {
 		}
 
 		~PSOParticle() {
-
-			delete[] PSOParticle::arrSelfConfidence;
-			delete[] PSOParticle::arrGroupConfidence;
 
 			delete this->neighborhood;
 

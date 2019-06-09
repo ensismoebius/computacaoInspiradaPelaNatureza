@@ -32,7 +32,7 @@ namespace PSOExperiments {
 			static constexpr double groupConfidence = 2.55;
 
 			static constexpr int amountOfDimensions = 2;
-			static constexpr unsigned int amountOfPopulation = 100;
+			static constexpr unsigned int amountOfPopulation = 10;
 
 			static double fitnessFunction(double* values, unsigned int valuesSize) {
 				(void) valuesSize;
@@ -73,7 +73,7 @@ namespace PSOExperiments {
 				limits->addLimits(-5, 5);
 
 				PSO* pso = new PSO(fitnessFunction, amountOfPopulation, amountOfDimensions, minSpeed, maxSpeed, selfConfidence, groupConfidence, limits);
-				pso->simulate(1000, printFunction);
+				pso->simulate(10000, printFunction);
 
 				closeFile();
 

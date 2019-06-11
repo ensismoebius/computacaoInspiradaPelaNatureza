@@ -32,6 +32,10 @@ class ACOMap {
 		ACOMap(unsigned int neighborhoodSize) {
 			this->pointsLentgh = neighborhoodSize;
 			this->points = new Point*[neighborhoodSize];
+
+			for (unsigned int i = 0; i < this->pointsLentgh; i++) {
+				this->points[i] = 0;
+			}
 		}
 
 		~ACOMap() {
@@ -49,6 +53,10 @@ class ACOMap {
 			}
 
 			this->points[index] = new Point(2, index, x, y);
+		}
+
+		Point* getFirstPoint() {
+			return this->points[0];
 		}
 
 		void firstSteps() {
@@ -77,6 +85,9 @@ class ACOMap {
 
 					to = this->points[ni];
 
+					// Connects with lower weight
+					from->addConnection(to, 0.5);
+
 					if (to == from || to == 0 || to->tag) {
 						continue;
 					}
@@ -87,12 +98,13 @@ class ACOMap {
 						shortestDistance = tempDistance;
 						selectedPoint = to;
 					}
-
 				}
 
 				if (selectedPoint == 0) break;
 
-				from->addConnection(selectedPoint, 1);
+				Point::setWeightBeetwen(from, selectedPoint, 1);
+
+				//from->addConnection(selectedPoint, 1);
 				from->tag = true;
 				from = selectedPoint;
 				last = selectedPoint;
@@ -105,6 +117,37 @@ class ACOMap {
 			this->resetPointsTags();
 		}
 
+		void printAll() {
+
+			long x1, y1, conx1, cony1;
+			conx1 = cony1 = x1 = y1 = 0;
+
+			long x0 = this->points[0]->coordinates.at(0);
+			long y0 = this->points[0]->coordinates.at(1);
+
+			for (unsigned int i = 1; i < this->pointsLentgh; i++) {
+
+				if (this->points[i] == 0) continue;
+
+				x1 = this->points[i]->coordinates[0];
+				y1 = this->points[i]->coordinates[1];
+
+				std::cout << x0 << "\t" << y0 << "\t";
+				std::cout << x1 - x0 << "\t" << y1 - y0 << "\n";
+
+				for (auto& con : this->points[i]->connections) {
+					conx1 = con.second->coordinates[0];
+					cony1 = con.second->coordinates[1];
+					std::cout << x0 << "\t" << y0 << "\t";
+					std::cout << conx1 - x0 << "\t" << cony1 - y0 << "\n";
+				}
+
+				x0 = x1;
+				y0 = y1;
+			}
+		}
+
+		// TODO debug!!!!!
 		void printConnections() {
 			Point* first = this->points[0];
 			Point* p = first;

@@ -10,13 +10,14 @@
  */
 
 #include "ACOMap.cpp"
-
+#include "Ant.cpp"
 int main() {
 
-	ACOMap map(15);
+	ACOMap map(14);
 
 	map.addNeighborhood(1, 2, 0);
 	map.addNeighborhood(10, 40, 1);
+	map.addNeighborhood(20, 2, 2);
 	map.addNeighborhood(52, 3, 3);
 	map.addNeighborhood(5, 1, 4);
 	map.addNeighborhood(15, 25, 5);
@@ -29,10 +30,13 @@ int main() {
 	map.addNeighborhood(8, 1, 11);
 	map.addNeighborhood(25, 25, 12);
 	map.addNeighborhood(9, 2, 13);
-	map.addNeighborhood(20, 2, 14);
 
 	map.firstSteps();
-	map.printConnections();
+	map.printAll();
+//	map.printConnections();
+
+	Ant a(map.getFirstPoint(), 14);
+	a.walk();
 
 	return 0;
 }

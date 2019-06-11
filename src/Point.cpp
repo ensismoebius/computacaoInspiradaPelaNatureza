@@ -8,18 +8,18 @@
 #ifndef SRC_POINT_CPP_
 #define SRC_POINT_CPP_
 
+#include <map>
 #include <vector>
 #include <cstdarg>
 #include <stdexcept>
 #include <algorithm>
 
 class Point {
-	private:
-		unsigned int index;
-		std::vector<double> connectionsWeights;
 	public:
+		unsigned int index;
 		bool tag = false;
-		std::vector<Point*> connections;
+		std::map<unsigned int, double> connectionsWeights;
+		std::map<unsigned int, Point*> connections;
 		std::vector<long> coordinates;
 
 		Point(unsigned int dimension, unsigned int index, ...) {
@@ -40,22 +40,20 @@ class Point {
 
 			if (point == 0) return;
 
-			try {
-				point->connections.at(this->index);
-			} catch (std::out_of_range& error) {
-				point->connections.push_back(this);
-				point->connectionsWeights.push_back(weight);
-			}
+			point->connections[this->index] = this;
+			point->connectionsWeights[this->index] = weight;
 
-			try {
-				this->connections.at(point->index);
-			} catch (std::out_of_range& error) {
-				this->connections.push_back(point);
-				this->connectionsWeights.push_back(weight);
-			}
+			this->connections[point->index] = point;
+			this->connectionsWeights[point->index] = weight;
 		}
 
-		static void updateWeightBeetwen(Point* one, Point* two, double weight) {
+		static void addWeightBeetwen(Point* one, Point* two, double amount) {
+			double weight = one->connectionsWeights[two->index];
+			weight += amount;
+			setWeightBeetwen(one, two, weight);
+		}
+
+		static void setWeightBeetwen(Point* one, Point* two, double weight) {
 
 			if (one->connections[two->index] == 0) {
 				one->connections[two->index] = two;

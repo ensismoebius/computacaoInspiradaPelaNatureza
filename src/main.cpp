@@ -9,16 +9,30 @@
  *
  */
 
-#include "lib/SquareMatrix.cpp"
+#include "ACOMap.cpp"
 
 int main() {
 
-	SquareMatrix<double, 20, 10> arr;
+	ACOMap map(15);
 
-	arr.set(10, 0, 0, 0);
-	arr.set(20, 1, 0, 1);
-	arr.set(30, 0, 1, 1);
-	arr.set(40, 1, 1, 2);
+	map.addNeighborhood(1, 2, 0);
+	map.addNeighborhood(10, 40, 1);
+	map.addNeighborhood(52, 3, 3);
+	map.addNeighborhood(5, 1, 4);
+	map.addNeighborhood(15, 25, 5);
+	map.addNeighborhood(5, 2, 6);
+	map.addNeighborhood(50, 2, 7);
+
+	map.addNeighborhood(2, 2, 8);
+	map.addNeighborhood(30, 40, 9);
+	map.addNeighborhood(72, 3, 10);
+	map.addNeighborhood(8, 1, 11);
+	map.addNeighborhood(25, 25, 12);
+	map.addNeighborhood(9, 2, 13);
+	map.addNeighborhood(20, 2, 14);
+
+	map.firstSteps();
+	map.printConnections();
 
 	return 0;
 }

@@ -13,6 +13,7 @@
 
 #include <cmath>
 #include <cstdarg>
+#include <typeinfo>
 
 template<typename TYPE, unsigned int DIMENSIONS, unsigned int ELEMENTS_PER_DIMENSION>
 /**
@@ -29,6 +30,8 @@ class SquareMatrix {
 		 * The data container
 		 */
 		TYPE* arrData = new TYPE[DIMENSIONS * ELEMENTS_PER_DIMENSION];
+
+		void (*uninitializationFunction)(TYPE& data);
 
 		/**
 		 * Calculates the actual position
@@ -49,13 +52,33 @@ class SquareMatrix {
 		}
 	public:
 
-		SquareMatrix() {
+		/**
+		 * Length per dimension
+		 */
+		const unsigned int length = ELEMENTS_PER_DIMENSION;
+
+		/**
+		 * Amount of dimensions
+		 */
+		const unsigned int dimensions = DIMENSIONS;
+
+		// TODO specify the dimensions in constructor using va_list
+		SquareMatrix(TYPE (*initializationFunction)(), void (*uninitializationFunction)(TYPE& data) = nullptr) {
+			this->uninitializationFunction = uninitializationFunction;
+
 			for (unsigned int i = 0; i < DIMENSIONS * ELEMENTS_PER_DIMENSION; i++) {
-				this->arrData[i] = 0;
+				this->arrData[i] = (*initializationFunction)();
 			}
 		}
 
 		~SquareMatrix() {
+
+			if (this->uninitializationFunction != nullptr) {
+				for (unsigned int i = 0; i < DIMENSIONS * ELEMENTS_PER_DIMENSION; i++) {
+					(*uninitializationFunction)(this->arrData[i]);
+				}
+			}
+
 			delete[] this->arrData;
 		}
 
@@ -90,7 +113,6 @@ class SquareMatrix {
 			va_end(coordinates);
 			return this->arrData[linearCoord];
 		}
-
 };
 
 #endif /* SRC_LIB_SQUAREMATRIX_CPP_ */

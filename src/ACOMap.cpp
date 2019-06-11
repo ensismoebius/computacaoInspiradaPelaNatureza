@@ -15,8 +15,7 @@
 class ACOMap {
 	private:
 
-		Point** points;
-		unsigned int pointsLentgh;
+		constexpr static double decayRate = 0.1;
 
 		void resetPointsTags() {
 			for (unsigned int i = 0; i < this->pointsLentgh; i++) {
@@ -26,8 +25,9 @@ class ACOMap {
 				this->points[i]->tag = false;
 			}
 		}
-
 	public:
+		Point** points;
+		unsigned int pointsLentgh;
 
 		ACOMap(unsigned int neighborhoodSize) {
 			this->pointsLentgh = neighborhoodSize;
@@ -53,10 +53,6 @@ class ACOMap {
 			}
 
 			this->points[index] = new Point(2, index, x, y);
-		}
-
-		Point* getFirstPoint() {
-			return this->points[0];
 		}
 
 		void firstSteps() {
@@ -117,6 +113,14 @@ class ACOMap {
 			this->resetPointsTags();
 		}
 
+		void decayWeights() {
+			for (unsigned int i = 0; i < this->pointsLentgh; i++) {
+				for (unsigned int j = 0; j < this->points[i]->connectionsWeights.size(); j++) {
+					this->points[i]->connectionsWeights[j] *= (1 - ACOMap::decayRate);
+				}
+			}
+		}
+
 		void printAll() {
 
 			long x1, y1, conx1, cony1;
@@ -145,46 +149,6 @@ class ACOMap {
 				x0 = x1;
 				y0 = y1;
 			}
-		}
-
-		// TODO debug!!!!!
-		void printConnections() {
-			Point* first = this->points[0];
-			Point* p = first;
-			p->tag = true;
-
-			long x0 = p->coordinates.at(0);
-			long y0 = p->coordinates.at(1);
-
-			long x1;
-			long y1;
-
-			unsigned int connectionIndex = 0;
-
-			do {
-				std::cout << x0 << "\t" << y0 << "\t";
-
-				connectionIndex = 0;
-				do {
-					p = p->connections[connectionIndex];
-					connectionIndex++;
-					if (p == 0) {
-						p = first;
-						break;
-					}
-				} while (p->tag);
-
-				p->tag = true;
-
-				x1 = p->coordinates.at(0);
-				y1 = p->coordinates.at(1);
-
-				std::cout << x1 - x0 << "\t" << y1 - y0 << "\n";
-
-				x0 = x1;
-				y0 = y1;
-
-			} while (p != first);
 		}
 
 		double euclidianDistance(int x1, int y1, int x2, int y2) {

@@ -35,8 +35,20 @@ int main() {
 	map.printAll();
 //	map.printConnections();
 
-	Ant a(map.getFirstPoint(), 14);
-	a.walk();
+	Ant** ants = new Ant*[map.pointsLentgh];
+
+	for (unsigned int pi = 0; pi < map.pointsLentgh; pi++) {
+		ants[pi] = new Ant(map.points[pi], map.pointsLentgh);
+	}
+
+	int iterations = 100;
+
+	while (iterations--) {
+		for (unsigned int pi = 0; pi < map.pointsLentgh; pi++) {
+			ants[pi]->walk();
+		}
+		map.decayWeights();
+	}
 
 	return 0;
 }

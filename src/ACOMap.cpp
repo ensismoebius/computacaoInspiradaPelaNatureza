@@ -62,7 +62,7 @@ class ACOMap {
 			this->points[index] = new Point(2, index, x, y);
 		}
 
-		void firstSteps() {
+		void traceConnections() {
 			unsigned int checkedPointCounter = 0;
 
 			Point* selectedPoint = 0;

@@ -31,14 +31,14 @@ int main() {
 	map.addNeighborhood(25, 25, 12);
 	map.addNeighborhood(9, 2, 13);
 
-	map.firstSteps();
+	map.traceConnections();
 	map.printAll();
 //	map.printConnections();
 
 	Ant** ants = new Ant*[14];
 
 	for (unsigned int pi = 0; pi < map.pointsLentgh; pi++) {
-		ants[pi] = new Ant(map.points[pi]);
+		ants[pi] = new Ant(map.points[pi], map.pointsLentgh);
 	}
 
 	int iterations = 100;

@@ -7,6 +7,7 @@
 
 #ifndef SRC_ANT_CPP_
 #define SRC_ANT_CPP_
+#include <map>
 #include <random>
 #include <iostream>
 #include "Point.cpp"
@@ -20,6 +21,8 @@ class Ant {
 		inline static double betha;
 		inline static double deltaWeight;
 
+		std::map<long, bool> visitedPoints;
+
 		Ant(Point* startingPoint, double alpha = 1, double betha = 5, double deltaWeight = 0.5) {
 			Ant::alpha = alpha;
 			Ant::betha = betha;
@@ -29,8 +32,14 @@ class Ant {
 		}
 
 		void walk() {
+			// The ant forgets his path just before each walk
+			resetVisited();
+
+			// Do the walk
 			this->walk(0, this->startingPoint, this->startingPoint, true);
 		}
+
+	private:
 
 		void walk(Point* ancestor, Point* start, Point* end, bool ignoreFirst = false) {
 
@@ -39,6 +48,9 @@ class Ant {
 			Point* next = 0;
 			while (next == 0) {
 				next = this->getNextPoint(ancestor, start);
+				if (next == 0 && isAllPointsVisited()) {
+					next = end;
+				}
 			}
 
 			walk(start, next, end);
@@ -46,62 +58,87 @@ class Ant {
 		}
 
 		void gotoToPoint(Point* from, Point* to) {
-			double delta = 1 / euclidianDistance2d(from->coordinates.data(), to->coordinates.data());
-			delta = (1 - Ant::deltaWeight) * from->connectionsWeights[to->index] + delta;
+			double newWeight = 1 / euclidianDistance2d(from->coordinates.data(), to->coordinates.data());
+			newWeight = (1 - Ant::deltaWeight) * from->connectionsWeights[to->index] + newWeight;
 
-			Point::setWeightBeetwen(from, to, delta);
+			Point::setWeightBeetwen(from, to, newWeight);
 		}
-
+		void resetVisited() {
+			this->visitedPoints.clear();
+		}
 		Point* getNextPoint(Point* ancestor, Point* current) {
 
 			Point* bestPoint = 0;
 
 			double weight = 0;
 			double distance = 0;
-
-			double rnd = 0;
-
-			double weightValue = 0;
-			double distanceValue = 0;
 			double totalSum = 0;
 
-			for (unsigned int i = 0; i < current->connections.size(); i++) {
-				// ignore back connections
-				if (current->connections[i] == ancestor) continue;
+			double randoValue = 0;
+			double probability = 0;
 
-				weightValue = current->connectionsWeights[current->connections[i]->index];
-				weightValue = pow(weightValue, alpha);
+			// Mark current as visited by this ant;
+			this->visitedPoints[current->index] = true;
 
-				distanceValue = euclidianDistance2d(current->coordinates.data(), current->connections[i]->coordinates.data());
-				distanceValue = pow(distanceValue, betha);
-
-				totalSum += weightValue * distanceValue;
+			// Mark the ancestor as visited (if any)
+			if (ancestor != 0) {
+				this->visitedPoints[current->index] = true;
 			}
 
+			// Calculate the total sum for probability
 			for (unsigned int i = 0; i < current->connections.size(); i++) {
 
-				// ignore back connections
-				if (current->connections[i] == ancestor) continue;
+				//ignore visited connections
+				if (this->visitedPoints[current->connections[i]->index]) continue;
 
-				// Probability of weight
-				weight = current->connectionsWeights[current->connections[i]->index] / weightValue;
+				// Retrieves the weight
+				weight = current->connectionsWeights[current->connections[i]->index];
 				weight = pow(weight, alpha);
 
-				// Probability of distance
-				distance = euclidianDistance2d(current->coordinates.data(), current->connections[i]->coordinates.data()) / distanceValue;
+				// Retrieves the inverse of distance
+				distance = euclidianDistance2d(current->coordinates.data(), current->connections[i]->coordinates.data());
 				distance = 1 / distance;
 				distance = pow(distance, betha);
 
-				double prob = (weight * distance) / totalSum;
+				totalSum += weight * distance;
+			}
 
-				// adds a random component to the choice
-				rnd = getUniformDistributedRandomPertubation() / (double) RAND_MAX;
+			// Calculate the probabilities
+			for (unsigned int i = 0; i < current->connections.size(); i++) {
 
-				if (prob >= rnd) {
+				//ignore visited connections
+				if (this->visitedPoints[current->connections[i]->index]) continue;
+
+				// Probability of weight
+				weight = current->connectionsWeights[current->connections[i]->index];
+				weight = pow(weight, alpha);
+
+				// Probability of distance
+				distance = euclidianDistance2d(current->coordinates.data(), current->connections[i]->coordinates.data());
+				distance = 1 / distance;
+				distance = pow(distance, betha);
+
+				// Calculate the overall probability
+				probability = (weight * distance) / totalSum;
+
+				// Generates a random number against which
+				// the overall probability will be compared
+				randoValue = getUniformDistributedRandomPertubation() / (double) RAND_MAX;
+
+				// Checks the best point probability
+				if (probability >= randoValue) {
 					bestPoint = current->connections[i];
 				}
 			}
 			return bestPoint;
+		}
+		bool isAllPointsVisited() {
+			bool res = false;
+
+			for (unsigned int i = 0; i < this->visitedPoints.size(); i++) {
+				res &= this->visitedPoints[i];
+			}
+			return res;
 		}
 };
 

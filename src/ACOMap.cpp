@@ -12,10 +12,11 @@
 #include <cmath>
 #include <iostream>
 #include "Point.cpp"
+#include "lib/geometry.h"
 class ACOMap {
 	private:
 
-		constexpr static double decayRate = 0.1;
+		constexpr static double decayRate = 0.05;
 
 		void resetPointsTags() {
 			for (unsigned int i = 0; i < this->pointsLentgh; i++) {
@@ -28,8 +29,14 @@ class ACOMap {
 	public:
 		Point** points;
 		unsigned int pointsLentgh;
+		inline static double initialWeight;
+		inline static double initialBestWeight;
 
-		ACOMap(unsigned int neighborhoodSize) {
+		ACOMap(unsigned int neighborhoodSize, double initialWeight = 0.000001, double initialBestWeight = 0.00001) {
+
+			ACOMap::initialWeight = initialWeight;
+			ACOMap::initialBestWeight = initialBestWeight;
+
 			this->pointsLentgh = neighborhoodSize;
 			this->points = new Point*[neighborhoodSize];
 
@@ -82,13 +89,13 @@ class ACOMap {
 					to = this->points[ni];
 
 					// Connects with lower weight
-					from->addConnection(to, 0.5);
+					from->addConnection(to, ACOMap::initialWeight);
 
 					if (to == from || to == 0 || to->tag) {
 						continue;
 					}
 
-					tempDistance = euclidianDistance(from->coordinates[0], from->coordinates[1], to->coordinates[0], to->coordinates[1]);
+					tempDistance = euclidianDistance2d(from->coordinates[0], from->coordinates[1], to->coordinates[0], to->coordinates[1]);
 
 					if (tempDistance < shortestDistance) {
 						shortestDistance = tempDistance;
@@ -98,9 +105,8 @@ class ACOMap {
 
 				if (selectedPoint == 0) break;
 
-				Point::setWeightBeetwen(from, selectedPoint, 1);
+				Point::setWeightBeetwen(from, selectedPoint, ACOMap::initialBestWeight);
 
-				//from->addConnection(selectedPoint, 1);
 				from->tag = true;
 				from = selectedPoint;
 				last = selectedPoint;
@@ -149,10 +155,6 @@ class ACOMap {
 				x0 = x1;
 				y0 = y1;
 			}
-		}
-
-		double euclidianDistance(int x1, int y1, int x2, int y2) {
-			return sqrt(pow(x2 + x1, 2) + pow(y2 + y1, 2));
 		}
 };
 

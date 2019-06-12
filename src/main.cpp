@@ -35,10 +35,10 @@ int main() {
 	map.printAll();
 //	map.printConnections();
 
-	Ant** ants = new Ant*[map.pointsLentgh];
+	Ant** ants = new Ant*[14];
 
 	for (unsigned int pi = 0; pi < map.pointsLentgh; pi++) {
-		ants[pi] = new Ant(map.points[pi], map.pointsLentgh);
+		ants[pi] = new Ant(map.points[pi]);
 	}
 
 	int iterations = 100;

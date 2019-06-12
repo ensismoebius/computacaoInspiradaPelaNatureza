@@ -16,6 +16,7 @@
 class Ant {
 	public:
 		Point* startingPoint;
+		unsigned int amountOfPoints;
 
 		inline static double alpha;
 		inline static double betha;
@@ -23,12 +24,13 @@ class Ant {
 
 		std::map<long, bool> visitedPoints;
 
-		Ant(Point* startingPoint, double alpha = 1, double betha = 5, double deltaWeight = 0.5) {
+		Ant(Point* startingPoint, unsigned int amountOfPoints, double alpha = 1, double betha = 5, double deltaWeight = 0.5) {
 			Ant::alpha = alpha;
 			Ant::betha = betha;
 			Ant::deltaWeight = deltaWeight;
 
 			this->startingPoint = startingPoint;
+			this->amountOfPoints = amountOfPoints;
 		}
 
 		void walk() {
@@ -133,12 +135,14 @@ class Ant {
 			return bestPoint;
 		}
 		bool isAllPointsVisited() {
-			bool res = false;
+
+			if (this->visitedPoints.size() < this->amountOfPoints) return false;
 
 			for (unsigned int i = 0; i < this->visitedPoints.size(); i++) {
-				res &= this->visitedPoints[i];
+				if (!this->visitedPoints[i]) return false;
 			}
-			return res;
+
+			return true;
 		}
 };
 

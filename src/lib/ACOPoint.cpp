@@ -57,15 +57,6 @@ class ACOPoint {
 		}
 
 		static void setWeightBeetwen(ACOPoint* one, ACOPoint* two, double weight) {
-
-			if (one->connections[two->index] == 0) {
-				one->connections[two->index] = two;
-			}
-
-			if (two->connections[one->index] == 0) {
-				two->connections[one->index] = one;
-			}
-
 			one->connectionsWeights[two->index] = weight;
 			two->connectionsWeights[one->index] = weight;
 		}

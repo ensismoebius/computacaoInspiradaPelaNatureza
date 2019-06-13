@@ -20,22 +20,18 @@
 #include "ACOPoint.cpp"
 #include "gaussianRandom.h"
 
-class Ant {
+class ACOAnt {
 	public:
 		ACOPoint* startingPoint;
 		unsigned int amountOfPoints;
 
-		inline static double alpha;
-		inline static double betha;
-		inline static double deltaWeight;
+		inline static double alpha = 1;
+		inline static double betha = 5;
+		inline static double deltaWeight = 0.5;
 
 		std::map<long, bool> visitedPoints;
 
-		Ant(ACOPoint* startingPoint, unsigned int amountOfPoints, double alpha = 1, double betha = 5, double deltaWeight = 0.5) {
-			Ant::alpha = alpha;
-			Ant::betha = betha;
-			Ant::deltaWeight = deltaWeight;
-
+		ACOAnt(ACOPoint* startingPoint, unsigned int amountOfPoints) {
 			this->startingPoint = startingPoint;
 			this->amountOfPoints = amountOfPoints;
 		}
@@ -68,7 +64,7 @@ class Ant {
 
 		void gotoToPoint(ACOPoint* from, ACOPoint* to) {
 			double newWeight = 1 / euclidianDistance2d(from->coordinates.data(), to->coordinates.data());
-			newWeight = (1 - Ant::deltaWeight) * from->connectionsWeights[to->index] + newWeight;
+			newWeight = (1 - ACOAnt::deltaWeight) * from->connectionsWeights[to->index] + newWeight;
 
 			ACOPoint::setWeightBeetwen(from, to, newWeight);
 		}

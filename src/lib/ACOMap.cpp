@@ -20,8 +20,6 @@
 #include "ACOPoint.cpp"
 class ACOMap {
 	private:
-		constexpr static double decayRate = 0.05;
-
 		void resetPointsTags() {
 			for (unsigned int i = 0; i < this->pointsLentgh; i++) {
 
@@ -104,14 +102,11 @@ class ACOMap {
 	public:
 		ACOPoint** points;
 		unsigned int pointsLentgh;
-		inline static double initialWeight;
-		inline static double initialBestWeight;
+		inline static double decayRate = 0.05;
+		inline static double initialWeight = 0.01;
+		inline static double initialBestWeight = 0.1;
 
-		ACOMap(unsigned int neighborhoodSize, double initialWeight = 0.01, double initialBestWeight = 0.1) {
-
-			ACOMap::initialWeight = initialWeight;
-			ACOMap::initialBestWeight = initialBestWeight;
-
+		ACOMap(unsigned int neighborhoodSize) {
 			this->pointsLentgh = neighborhoodSize;
 			this->points = new ACOPoint*[neighborhoodSize];
 
@@ -233,9 +228,7 @@ class ACOMap {
 		}
 
 		void printBestPath(ACOPoint* start) {
-
 			std::map<long, bool> visitedPoints;
-
 			this->printBestPath(0, start, start, visitedPoints, true);
 		}
 };

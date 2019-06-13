@@ -7,12 +7,17 @@
 
 #ifndef SRC_ANT_CPP_
 #define SRC_ANT_CPP_
+
+#include <cstdlib>
 #include <map>
-#include <random>
-#include <iostream>
+#include <vector>
+
 #include "Point.cpp"
-#include "lib/geometry.h"
-#include "lib/gaussianRandom.h"
+
+double euclidianDistance2d(long int *coord1, long int *coord2);
+int getUniformDistributedRandomPertubation();
+double pow(double __x, double __y);
+
 class Ant {
 	public:
 		Point* startingPoint;
@@ -76,7 +81,7 @@ class Ant {
 			double distance = 0;
 			double totalSum = 0;
 
-			double randoValue = 0;
+			double randomValue = 0;
 			double probability = 0;
 
 			// Mark current as visited by this ant;
@@ -127,10 +132,10 @@ class Ant {
 
 				// Generates a random number against which
 				// the overall probability will be compared
-				randoValue = getUniformDistributedRandomPertubation() / (double) RAND_MAX;
+				randomValue = getUniformDistributedRandomPertubation() / (double) RAND_MAX;
 
 				// Checks the best point probability
-				if (probability >= randoValue) {
+				if (probability >= randomValue) {
 					bestPoint = current->connections[i];
 				}
 			}

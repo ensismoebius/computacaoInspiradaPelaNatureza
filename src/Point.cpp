@@ -27,7 +27,7 @@ class Point {
 			this->index = index;
 
 			va_list coordinates;
-			va_start(coordinates, dimension);
+			va_start(coordinates, index);
 
 			for (unsigned int i = 0; i < dimension; i++) {
 				this->coordinates.push_back(va_arg(coordinates, long));

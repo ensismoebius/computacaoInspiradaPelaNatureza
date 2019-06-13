@@ -1,26 +1,28 @@
-/*
- * Ant.h
+/**
+ * @author André Furlan
+ * @email ensismoebius@gmail.com
+ * This whole project are under GPLv3, for
+ * more information read the license file
  *
- *  Created on: 10 de jun de 2019
- *      Author: ensis
+ * 10 de jun de 2019
+ *
  */
 
-#ifndef SRC_ANT_CPP_
-#define SRC_ANT_CPP_
+#ifndef SRC_LIB_ACOANT_CPP_
+#define SRC_LIB_ACOANT_CPP_
 
-#include <cstdlib>
 #include <map>
+#include <cmath>
 #include <vector>
+#include <cstdlib>
 
-#include "Point.cpp"
-
-double euclidianDistance2d(long int *coord1, long int *coord2);
-int getUniformDistributedRandomPertubation();
-double pow(double __x, double __y);
+#include "geometry.h"
+#include "ACOPoint.cpp"
+#include "gaussianRandom.h"
 
 class Ant {
 	public:
-		Point* startingPoint;
+		ACOPoint* startingPoint;
 		unsigned int amountOfPoints;
 
 		inline static double alpha;
@@ -29,7 +31,7 @@ class Ant {
 
 		std::map<long, bool> visitedPoints;
 
-		Ant(Point* startingPoint, unsigned int amountOfPoints, double alpha = 1, double betha = 5, double deltaWeight = 0.5) {
+		Ant(ACOPoint* startingPoint, unsigned int amountOfPoints, double alpha = 1, double betha = 5, double deltaWeight = 0.5) {
 			Ant::alpha = alpha;
 			Ant::betha = betha;
 			Ant::deltaWeight = deltaWeight;
@@ -48,11 +50,11 @@ class Ant {
 
 	private:
 
-		void walk(Point* ancestor, Point* start, Point* end, bool ignoreFirst = false) {
+		void walk(ACOPoint* ancestor, ACOPoint* start, ACOPoint* end, bool ignoreFirst = false) {
 
 			if (start == end && !ignoreFirst) return;
 
-			Point* next = 0;
+			ACOPoint* next = 0;
 			while (next == 0) {
 				next = this->getNextPoint(ancestor, start);
 				if (next == 0 && isAllPointsVisited()) {
@@ -64,18 +66,18 @@ class Ant {
 			this->gotoToPoint(start, next);
 		}
 
-		void gotoToPoint(Point* from, Point* to) {
+		void gotoToPoint(ACOPoint* from, ACOPoint* to) {
 			double newWeight = 1 / euclidianDistance2d(from->coordinates.data(), to->coordinates.data());
 			newWeight = (1 - Ant::deltaWeight) * from->connectionsWeights[to->index] + newWeight;
 
-			Point::setWeightBeetwen(from, to, newWeight);
+			ACOPoint::setWeightBeetwen(from, to, newWeight);
 		}
 		void resetVisited() {
 			this->visitedPoints.clear();
 		}
-		Point* getNextPoint(Point* ancestor, Point* current) {
+		ACOPoint* getNextPoint(ACOPoint* ancestor, ACOPoint* current) {
 
-			Point* bestPoint = 0;
+			ACOPoint* bestPoint = 0;
 
 			double weight = 0;
 			double distance = 0;
@@ -153,4 +155,4 @@ class Ant {
 		}
 };
 
-#endif /* SRC_ANT_CPP_ */
+#endif /* SRC_LIB_ACOANT_CPP_ */

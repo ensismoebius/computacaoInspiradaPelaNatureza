@@ -8,8 +8,8 @@
  *
  */
 
-#include "ACOMap.cpp"
-#include "Ant.cpp"
+#include "lib/ACOAnt.cpp"
+#include "lib/ACOMap.cpp"
 int main() {
 
 	ACOMap map(52);

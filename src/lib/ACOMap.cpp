@@ -1,19 +1,23 @@
-/*
- * Map.h
+/**
+ * @author André Furlan
+ * @email ensismoebius@gmail.com
+ * This whole project are under GPLv3, for
+ * more information read the license file
  *
- *  Created on: 9 de jun de 2019
- *      Author: ensis
+ * 9 de jun de 2019
+ *
  */
 
-#ifndef SRC_MAP_CPP_
-#define SRC_MAP_CPP_
+#ifndef SRC_LIB_ACOMAP_CPP_
+#define SRC_LIB_ACOMAP_CPP_
 
 #include <map>
 #include <cmath>
 #include <limits>
 #include <iostream>
-#include "Point.cpp"
-#include "lib/geometry.h"
+
+#include "geometry.h"
+#include "ACOPoint.cpp"
 class ACOMap {
 	private:
 		constexpr static double decayRate = 0.05;
@@ -27,11 +31,11 @@ class ACOMap {
 			}
 		}
 
-		void printBestPath(Point* ancestor, Point* start, Point* end, std::map<long, bool>& visitedPoints, bool ignoreFirst = false) {
+		void printBestPath(ACOPoint* ancestor, ACOPoint* start, ACOPoint* end, std::map<long, bool>& visitedPoints, bool ignoreFirst = false) {
 
 			if (start == end && !ignoreFirst) return;
 
-			Point* next = 0;
+			ACOPoint* next = 0;
 			while (next == 0) {
 				next = this->getNextPoint(ancestor, start, visitedPoints);
 				if (next == 0 && this->isAllPointsVisited(visitedPoints)) {
@@ -62,7 +66,7 @@ class ACOMap {
 			return true;
 		}
 
-		Point* getNextPoint(Point* ancestor, Point* current, std::map<long, bool>& visitedPoints) {
+		ACOPoint* getNextPoint(ACOPoint* ancestor, ACOPoint* current, std::map<long, bool>& visitedPoints) {
 
 			long index = 0;
 			long bestIndex = 0;
@@ -98,7 +102,7 @@ class ACOMap {
 		}
 
 	public:
-		Point** points;
+		ACOPoint** points;
 		unsigned int pointsLentgh;
 		inline static double initialWeight;
 		inline static double initialBestWeight;
@@ -109,7 +113,7 @@ class ACOMap {
 			ACOMap::initialBestWeight = initialBestWeight;
 
 			this->pointsLentgh = neighborhoodSize;
-			this->points = new Point*[neighborhoodSize];
+			this->points = new ACOPoint*[neighborhoodSize];
 
 			for (unsigned int i = 0; i < this->pointsLentgh; i++) {
 				this->points[i] = 0;
@@ -130,18 +134,18 @@ class ACOMap {
 				exit(1);
 			}
 
-			this->points[index] = new Point(2, index, x, y);
+			this->points[index] = new ACOPoint(2, index, x, y);
 		}
 
 		void traceConnections() {
 			unsigned int checkedPointCounter = 0;
 
-			Point* selectedPoint = 0;
-			Point* from = 0;
-			Point* to = 0;
+			ACOPoint* selectedPoint = 0;
+			ACOPoint* from = 0;
+			ACOPoint* to = 0;
 
-			Point* first = 0;
-			Point* last = 0;
+			ACOPoint* first = 0;
+			ACOPoint* last = 0;
 
 			double shortestDistance = 0;
 			double tempDistance = 0;
@@ -176,7 +180,7 @@ class ACOMap {
 
 				if (selectedPoint == 0) break;
 
-				Point::setWeightBeetwen(from, selectedPoint, ACOMap::initialBestWeight);
+				ACOPoint::setWeightBeetwen(from, selectedPoint, ACOMap::initialBestWeight);
 
 				from->tag = true;
 				from = selectedPoint;
@@ -228,7 +232,7 @@ class ACOMap {
 			}
 		}
 
-		void printBestPath(Point* start) {
+		void printBestPath(ACOPoint* start) {
 
 			std::map<long, bool> visitedPoints;
 
@@ -236,4 +240,4 @@ class ACOMap {
 		}
 };
 
-#endif /* SRC_MAP_CPP_ */
+#endif /* SRC_LIB_ACOMAP_CPP_ */

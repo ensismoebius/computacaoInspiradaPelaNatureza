@@ -1,12 +1,15 @@
-/*
- * Point.h
+/**
+ * @author André Furlan
+ * @email ensismoebius@gmail.com
+ * This whole project are under GPLv3, for
+ * more information read the license file
  *
- *  Created on: 10 de jun de 2019
- *      Author: ensis
+ * 10 de jun de 2019
+ *
  */
 
-#ifndef SRC_POINT_CPP_
-#define SRC_POINT_CPP_
+#ifndef SRC_LIB_ACOPOINT_CPP_
+#define SRC_LIB_ACOPOINT_CPP_
 
 #include <map>
 #include <vector>
@@ -14,15 +17,15 @@
 #include <stdexcept>
 #include <algorithm>
 
-class Point {
+class ACOPoint {
 	public:
 		unsigned int index;
 		bool tag = false;
 		std::map<unsigned int, double> connectionsWeights;
-		std::map<unsigned int, Point*> connections;
+		std::map<unsigned int, ACOPoint*> connections;
 		std::vector<long> coordinates;
 
-		Point(unsigned int dimension, unsigned int index, ...) {
+		ACOPoint(unsigned int dimension, unsigned int index, ...) {
 
 			this->index = index;
 
@@ -36,7 +39,7 @@ class Point {
 			va_end(coordinates);
 		}
 
-		void addConnection(Point* point, double weight) {
+		void addConnection(ACOPoint* point, double weight) {
 
 			if (point == 0) return;
 
@@ -47,13 +50,13 @@ class Point {
 			this->connectionsWeights[point->index] = weight;
 		}
 
-		static void addWeightBeetwen(Point* one, Point* two, double amount) {
+		static void addWeightBeetwen(ACOPoint* one, ACOPoint* two, double amount) {
 			double weight = one->connectionsWeights[two->index];
 			weight += amount;
 			setWeightBeetwen(one, two, weight);
 		}
 
-		static void setWeightBeetwen(Point* one, Point* two, double weight) {
+		static void setWeightBeetwen(ACOPoint* one, ACOPoint* two, double weight) {
 
 			if (one->connections[two->index] == 0) {
 				one->connections[two->index] = two;
@@ -68,4 +71,4 @@ class Point {
 		}
 };
 
-#endif /* SRC_POINT_CPP_ */
+#endif /* SRC_LIB_ACOPOINT_CPP_ */

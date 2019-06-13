@@ -8,14 +8,14 @@
 #ifndef SRC_MAP_CPP_
 #define SRC_MAP_CPP_
 
-#include <limits>
+#include <map>
 #include <cmath>
+#include <limits>
 #include <iostream>
 #include "Point.cpp"
 #include "lib/geometry.h"
 class ACOMap {
 	private:
-
 		constexpr static double decayRate = 0.05;
 
 		void resetPointsTags() {
@@ -26,13 +26,84 @@ class ACOMap {
 				this->points[i]->tag = false;
 			}
 		}
+
+		void printBestPath(Point* ancestor, Point* start, Point* end, std::map<long, bool>& visitedPoints, bool ignoreFirst = false) {
+
+			if (start == end && !ignoreFirst) return;
+
+			Point* next = 0;
+			while (next == 0) {
+				next = this->getNextPoint(ancestor, start, visitedPoints);
+				if (next == 0 && this->isAllPointsVisited(visitedPoints)) {
+					next = end;
+				}
+			}
+
+			this->printBestPath(start, next, end, visitedPoints);
+
+			long x0 = start->coordinates[0];
+			long y0 = start->coordinates[1];
+
+			long x1 = next->coordinates[0];
+			long y1 = next->coordinates[1];
+
+			std::cout << x0 << "\t" << y0 << "\t";
+			std::cout << x1 - x0 << "\t" << y1 - y0 << "\n";
+		}
+
+		bool isAllPointsVisited(std::map<long, bool>& visitedPoints) {
+
+			if (visitedPoints.size() < this->pointsLentgh) return false;
+
+			for (unsigned int i = 0; i < visitedPoints.size(); i++) {
+				if (!visitedPoints[i]) return false;
+			}
+
+			return true;
+		}
+
+		Point* getNextPoint(Point* ancestor, Point* current, std::map<long, bool>& visitedPoints) {
+
+			long index = 0;
+			long bestIndex = 0;
+
+			double weight = 0;
+			double bestWeight = 0;
+
+			// Mark current as visited by this ant;
+			visitedPoints[current->index] = true;
+
+			// Mark the ancestor as visited (if any)
+			if (ancestor != 0) {
+				visitedPoints[ancestor->index] = true;
+			}
+
+			// Calculate the total sum for probability
+			for (unsigned int i = 0; i < current->connections.size(); i++) {
+
+				//ignore visited connections
+				if (visitedPoints[current->connections[i]->index]) continue;
+
+				// Retrieves the weight
+				index = current->connections[i]->index;
+				weight = current->connectionsWeights[current->connections[i]->index];
+
+				if (weight > bestWeight) {
+					bestIndex = index;
+					bestWeight = weight;
+				}
+			}
+
+			return current->connections[bestIndex];
+		}
+
 	public:
 		Point** points;
 		unsigned int pointsLentgh;
 		inline static double initialWeight;
 		inline static double initialBestWeight;
 
-		ACOMap(unsigned int neighborhoodSize, double initialWeight = 0.000001, double initialBestWeight = 0.00001) {
+		ACOMap(unsigned int neighborhoodSize, double initialWeight = 0.01, double initialBestWeight = 0.1) {
 
 			ACOMap::initialWeight = initialWeight;
 			ACOMap::initialBestWeight = initialBestWeight;
@@ -115,7 +186,7 @@ class ACOMap {
 				selectedPoint = 0;
 			}
 
-			last->addConnection(first, 1);
+			last->addConnection(first, ACOMap::initialBestWeight);
 			this->resetPointsTags();
 		}
 
@@ -155,6 +226,13 @@ class ACOMap {
 				x0 = x1;
 				y0 = y1;
 			}
+		}
+
+		void printBestPath(Point* start) {
+
+			std::map<long, bool> visitedPoints;
+
+			this->printBestPath(0, start, start, visitedPoints, true);
 		}
 };
 

@@ -11,7 +11,7 @@
 #ifndef SRC_LIB_GEOMETRY_H_
 #define SRC_LIB_GEOMETRY_H_
 
-long euclidianDistance2d(long* coord1, long* coord2);
-long euclidianDistance2d(int x1, int y1, int x2, int y2);
+double euclidianDistance2d(long* coord1, long* coord2);
+double euclidianDistance2d(int x1, int y1, int x2, int y2);
 
 #endif /* SRC_LIB_GEOMETRY_H_ */

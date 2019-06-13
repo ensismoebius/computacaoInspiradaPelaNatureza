@@ -84,7 +84,7 @@ class Ant {
 
 			// Mark the ancestor as visited (if any)
 			if (ancestor != 0) {
-				this->visitedPoints[current->index] = true;
+				this->visitedPoints[ancestor->index] = true;
 			}
 
 			// Calculate the total sum for probability
@@ -94,7 +94,9 @@ class Ant {
 				if (this->visitedPoints[current->connections[i]->index]) continue;
 
 				// Retrieves the weight
-				weight = current->connectionsWeights[current->connections[i]->index];
+
+				long rrr = current->connections[i]->index;
+				weight = current->connectionsWeights[rrr];
 				weight = pow(weight, alpha);
 
 				// Retrieves the inverse of distance

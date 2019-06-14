@@ -14,9 +14,11 @@
 #include <map>
 #include <cmath>
 #include <limits>
+#include <sstream>
 #include <iostream>
 
 #include "geometry.h"
+#include "fileWriter.h"
 #include "ACOPoint.cpp"
 class ACOMap {
 	private:
@@ -29,28 +31,36 @@ class ACOMap {
 			}
 		}
 
-		void printBestPath(ACOPoint* ancestor, ACOPoint* start, ACOPoint* end, std::map<long, bool>& visitedPoints, bool ignoreFirst = false) {
+		std::string getBestPathVectorsString(ACOPoint* ancestor, ACOPoint* start, ACOPoint* end, bool ignoreFirst = false) {
 
-			if (start == end && !ignoreFirst) return;
+			std::stringstream stream;
+			std::map<long, bool> visitedPoints;
 
-			ACOPoint* next = 0;
-			while (next == 0) {
-				next = this->getNextPoint(ancestor, start, visitedPoints);
-				if (next == 0 && this->isAllPointsVisited(visitedPoints)) {
-					next = end;
+			while (start != end || ignoreFirst) {
+				ignoreFirst = false;
+
+				ACOPoint* next = 0;
+				while (next == 0) {
+					next = this->getNextPoint(ancestor, start, visitedPoints);
+					if (next == 0 && this->isAllPointsVisited(visitedPoints)) {
+						next = end;
+					}
 				}
+
+				long x0 = start->coordinates[0];
+				long y0 = start->coordinates[1];
+
+				long x1 = next->coordinates[0];
+				long y1 = next->coordinates[1];
+
+				stream << x0 << "\t" << y0 << "\t";
+				stream << x1 - x0 << "\t" << y1 - y0 << "\n";
+
+				ancestor = start;
+				start = next;
 			}
 
-			this->printBestPath(start, next, end, visitedPoints);
-
-			long x0 = start->coordinates[0];
-			long y0 = start->coordinates[1];
-
-			long x1 = next->coordinates[0];
-			long y1 = next->coordinates[1];
-
-			std::cout << x0 << "\t" << y0 << "\t";
-			std::cout << x1 - x0 << "\t" << y1 - y0 << "\n";
+			return stream.rdbuf()->str();
 		}
 
 		bool isAllPointsVisited(std::map<long, bool>& visitedPoints) {
@@ -97,6 +107,13 @@ class ACOMap {
 			}
 
 			return current->connections[bestIndex];
+		}
+
+		char* stringToChar(const std::string& s) {
+			char* txt = new char[s.size() + 1];
+			s.copy(txt, s.size() + 1);
+			txt[s.size()] = '\0';
+			return txt;
 		}
 
 	public:
@@ -227,9 +244,16 @@ class ACOMap {
 			}
 		}
 
+		void saveBestPath(ACOPoint* start, const char* path) {
+			openFile(path);
+			std::string s = this->getBestPathVectorsString(0, start, start, true);
+
+			char* txt = stringToChar(s);
+			writeCharsToFile(txt);
+			closeFile();
+		}
 		void printBestPath(ACOPoint* start) {
-			std::map<long, bool> visitedPoints;
-			this->printBestPath(0, start, start, visitedPoints, true);
+			std::cout << this->getBestPathVectorsString(0, start, start, true);
 		}
 };
 

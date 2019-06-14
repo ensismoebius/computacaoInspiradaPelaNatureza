@@ -101,7 +101,7 @@ namespace ACOExperiments {
 					std::cout << "Remaining iterations: " << iterations << "\n";
 				}
 
-				map.printBestPath(map.points[0]);
+				map.saveBestPath(map.points[0], "/tmp/data01.csv");
 
 				for (unsigned int pi = 0; pi < map.pointsLentgh; pi++) {
 					delete ants[pi];

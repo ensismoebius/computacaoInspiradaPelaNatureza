@@ -7,8 +7,8 @@
  * 12 de jun de 2019
  *
  */
-#ifndef CLASS_ACOExperiment05_CPP_
-#define CLASS_ACOExperiment05_CPP_
+#ifndef CLASS_ACOExperiment06_CPP_
+#define CLASS_ACOExperiment06_CPP_
 
 #include <iostream>
 
@@ -17,19 +17,19 @@
 
 namespace ACOExperiments {
 
-	class Experiment05 {
+	class Experiment06 {
 		public:
 			static void perform() {
-				int iterations = 2;
+				int iterations = 1;
 				int amountOfLocations = 52;
 
-				ACOMap::decayRate = 0.05;
-				ACOMap::initialWeight = 0.01;
-				ACOMap::initialBestWeight = 0.1;
+				ACOMap::decayRate = 0.0000001;
+				ACOMap::initialWeight = 0.000001;
+				ACOMap::initialBestWeight = 0.000001;
 
 				ACOAnt::alpha = 1;
-				ACOAnt::betha = 5;
-				ACOAnt::deltaWeight = 0.5;
+				ACOAnt::betha = 1;
+				ACOAnt::deltaWeight = 0.0000001;
 
 				ACOMap map(amountOfLocations);
 				ACOAnt** ants = new ACOAnt*[amountOfLocations];
@@ -101,7 +101,7 @@ namespace ACOExperiments {
 					std::cout << "Remaining iterations: " << iterations << "\n";
 				}
 
-				map.saveBestPath(map.points[0], "/tmp/data05.csv");
+				map.saveBestPath(map.points[0], "/tmp/data06.csv");
 
 				for (unsigned int pi = 0; pi < map.pointsLentgh; pi++) {
 					delete ants[pi];
@@ -110,4 +110,4 @@ namespace ACOExperiments {
 			}
 	};
 }
-#endif /* CLASS_ACOExperiment05_CPP_ */
+#endif /* CLASS_ACOExperiment06_CPP_ */

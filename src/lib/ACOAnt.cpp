@@ -23,11 +23,13 @@
 class ACOAnt {
 	public:
 		ACOPoint* startingPoint;
+
+		double travelledDistance;
 		unsigned int amountOfPoints;
 
-		inline static double alpha = 1;
-		inline static double betha = 5;
-		inline static double deltaWeight = 0.5;
+		inline static double weightInfluence = 1;
+		inline static double distanceInfluence = 5;
+		inline static double weightRate = 0.5;
 
 		std::map<long, bool> visitedPoints;
 
@@ -37,6 +39,10 @@ class ACOAnt {
 		}
 
 		void walk() {
+
+			// forget the distance traveled
+			this->travelledDistance = 0;
+
 			// The ant forgets his path just before each walk
 			resetVisited();
 
@@ -63,8 +69,10 @@ class ACOAnt {
 		}
 
 		void gotoToPoint(ACOPoint* from, ACOPoint* to) {
-			double newWeight = 1 / euclidianDistance2d(from->coordinates.data(), to->coordinates.data());
-			newWeight = (1 - ACOAnt::deltaWeight) * from->connectionsWeights[to->index] + newWeight;
+			double distance = euclidianDistance2d(from->coordinates.data(), to->coordinates.data());
+
+			double newWeight = 1 / distance;
+			newWeight = (1 - ACOAnt::weightRate) * from->connectionsWeights[to->index] + newWeight;
 
 			ACOPoint::setWeightBeetwen(from, to, newWeight);
 		}
@@ -100,12 +108,12 @@ class ACOAnt {
 
 				long rrr = current->connections[i]->index;
 				weight = current->connectionsWeights[rrr];
-				weight = pow(weight, alpha);
+				weight = pow(weight, weightInfluence);
 
 				// Retrieves the inverse of distance
 				distance = euclidianDistance2d(current->coordinates.data(), current->connections[i]->coordinates.data());
 				distance = 1 / distance;
-				distance = pow(distance, betha);
+				distance = pow(distance, distanceInfluence);
 
 				totalSum += weight * distance;
 			}
@@ -118,12 +126,12 @@ class ACOAnt {
 
 				// Probability of weight
 				weight = current->connectionsWeights[current->connections[i]->index];
-				weight = pow(weight, alpha);
+				weight = pow(weight, weightInfluence);
 
 				// Probability of distance
 				distance = euclidianDistance2d(current->coordinates.data(), current->connections[i]->coordinates.data());
 				distance = 1 / distance;
-				distance = pow(distance, betha);
+				distance = pow(distance, distanceInfluence);
 
 				// Calculate the overall probability
 				probability = (weight * distance) / totalSum;

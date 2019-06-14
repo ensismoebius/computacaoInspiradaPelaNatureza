@@ -33,6 +33,7 @@ class ACOMap {
 
 		std::string getBestPathVectorsString(ACOPoint* ancestor, ACOPoint* start, ACOPoint* end, bool ignoreFirst = false) {
 
+			double traveledDistance = 0;
 			std::stringstream stream;
 			std::map<long, bool> visitedPoints;
 
@@ -53,8 +54,10 @@ class ACOMap {
 				long x1 = next->coordinates[0];
 				long y1 = next->coordinates[1];
 
+				traveledDistance += euclidianDistance2d(x0, y0, x1, y1);
+
 				stream << x0 << "\t" << y0 << "\t";
-				stream << x1 - x0 << "\t" << y1 - y0 << "\n";
+				stream << x1 - x0 << "\t" << y1 - y0 << "\t" << traveledDistance << "\n";
 
 				ancestor = start;
 				start = next;

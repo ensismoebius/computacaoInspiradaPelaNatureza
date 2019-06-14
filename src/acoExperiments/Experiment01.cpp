@@ -20,16 +20,16 @@ namespace ACOExperiments {
 	class Experiment01 {
 		public:
 			static void perform() {
-				int iterations = 2;
+				int iterations = 15;
 				int amountOfLocations = 52;
 
-				ACOMap::decayRate = 0.05;
+				ACOMap::decayRate = 0.1;
 				ACOMap::initialWeight = 0.01;
-				ACOMap::initialBestWeight = 0.1;
+				ACOMap::initialBestWeight = 0.01;
 
-				ACOAnt::alpha = 1;
-				ACOAnt::betha = 5;
-				ACOAnt::deltaWeight = 0.5;
+				ACOAnt::weightInfluence = 1;
+				ACOAnt::distanceInfluence = 2;
+				ACOAnt::weightRate = 0.5;
 
 				ACOMap map(amountOfLocations);
 				ACOAnt** ants = new ACOAnt*[amountOfLocations];
@@ -102,6 +102,11 @@ namespace ACOExperiments {
 				}
 
 				map.saveBestPath(map.points[0], "/tmp/data01.csv");
+
+				openFile("/tmp/p");
+				writeCharsToFile("plot \"/tmp/data01.csv\" using 1:2:3:4 with vectors filled head lw 1\n");
+				closeFile();
+				system("gnuplot -p /tmp/p");
 
 				for (unsigned int pi = 0; pi < map.pointsLentgh; pi++) {
 					delete ants[pi];

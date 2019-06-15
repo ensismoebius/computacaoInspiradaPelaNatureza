@@ -12,9 +12,10 @@
 #ifndef SRC_PSOEXPERIMENTS_EXPERIMENT01_CPP_
 #define SRC_PSOEXPERIMENTS_EXPERIMENT01_CPP_
 
-#include <iomanip>
 #include <iostream>
+#include <iomanip>
 #include <string>
+#include <cmath>
 
 #include "../lib/fileWriter.h"
 #include "../lib/PSO.cpp"
@@ -24,49 +25,67 @@ namespace PSOExperiments {
 	class Experiment01 {
 
 		public:
+
+			inline static double best;
+
 			static constexpr double minSpeed = -2;
 			static constexpr double maxSpeed = 2;
 
 			static constexpr double selfConfidence = 1.55;
 			static constexpr double groupConfidence = 2.55;
 
-			static constexpr int amountOfDimensions = 1;
-			static constexpr unsigned int amountOfPopulation = 1;
+			static constexpr int amountOfDimensions = 2;
+			static constexpr unsigned int amountOfPopulation = 10;
 
 			static double fitnessFunction(double* values, unsigned int valuesSize) {
-				return values[valuesSize - 1] * values[valuesSize - 1];
+				(void) valuesSize;
+
+				double x = values[0];
+				double y = values[1];
+
+				return pow(1 - x, 2) + 100 * pow(y - pow(x, 2), 2);
 			}
 
 			static void printFunction(double bestResult, double* bestCoordinates, double result, double* coordinates) {
 
-				(void) result;
 				(void) coordinates;
 
-				std::cout << "Best value: " << bestResult << std::endl;
+				if (best > bestResult) {
+					best = bestResult;
 
-				for (unsigned int i = 0; i < amountOfDimensions; i++) {
-					std::cout << bestCoordinates[i] << ",";
+					std::cout << "Best value: " << bestResult << std::endl;
+
+					for (unsigned int i = 0; i < amountOfDimensions; i++) {
+						std::cout << bestCoordinates[i] << ",";
+					}
+					std::cout << std::endl;
 				}
-				std::cout << std::endl;
 
-//				writeNumberToFile(bestResult);
+				writeNumberToFileAtSameLine(bestResult);
+				writeCharsToFile("\t");
+				writeNumberToFileAtSameLine(result);
+				writeNewlineToFile();
 			}
 
 			static void perform() {
+
+				best = 1000000.0;
 
 				std::string line;
 				std::cout << std::fixed;
 				std::cout << std::setprecision(6);
 
-//				openFile("/tmp/PSOExperiments_Experiment01.csv");
+				openFile("/tmp/PSOExperiments_Experiment01.csv");
 
 				PSOLimits* limits = new PSOLimits(amountOfDimensions);
-				limits->addLimits(-7, 7);
+				limits->addLimits(-5, 5);
+				limits->addLimits(-5, 5);
 
 				PSO* pso = new PSO(fitnessFunction, amountOfPopulation, amountOfDimensions, minSpeed, maxSpeed, selfConfidence, groupConfidence, limits);
-				pso->simulate(1000, printFunction);
+				pso->simulate(10000, printFunction);
 
-//				closeFile();
+				closeFile();
+
 				delete limits;
 				delete pso;
 			}

@@ -66,6 +66,37 @@ class ACOMap {
 			return stream.rdbuf()->str();
 		}
 
+		double getTraveledDistance(ACOPoint* ancestor, ACOPoint* start, ACOPoint* end, bool ignoreFirst = false) {
+
+			double traveledDistance = 0;
+			std::map<long, bool> visitedPoints;
+
+			while (start != end || ignoreFirst) {
+				ignoreFirst = false;
+
+				ACOPoint* next = 0;
+				while (next == 0) {
+					next = this->getNextPoint(ancestor, start, visitedPoints);
+					if (next == 0 && this->isAllPointsVisited(visitedPoints)) {
+						next = end;
+					}
+				}
+
+				long x0 = start->coordinates[0];
+				long y0 = start->coordinates[1];
+
+				long x1 = next->coordinates[0];
+				long y1 = next->coordinates[1];
+
+				traveledDistance += euclidianDistance2d(x0, y0, x1, y1);
+
+				ancestor = start;
+				start = next;
+			}
+
+			return traveledDistance;
+		}
+
 		bool isAllPointsVisited(std::map<long, bool>& visitedPoints) {
 
 			if (visitedPoints.size() < this->pointsLentgh) return false;
@@ -245,6 +276,10 @@ class ACOMap {
 				x0 = x1;
 				y0 = y1;
 			}
+		}
+
+		double getTraveledDistance(ACOPoint* start) {
+			return this->getTraveledDistance(0, start, start, true);
 		}
 
 		void saveBestPath(ACOPoint* start, const char* path) {

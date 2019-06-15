@@ -23,9 +23,9 @@ namespace ACOExperiments {
 				int iterations = 15;
 				int amountOfLocations = 52;
 
-				ACOMap::decayRate = 0.1;
-				ACOMap::initialWeight = 0.01;
-				ACOMap::initialBestWeight = 0.01;
+				ACOMap::decayRate = 0.9;
+				ACOMap::initialWeight = 0.1;
+				ACOMap::initialBestWeight = 0.1;
 
 				ACOAnt::weightInfluence = 1;
 				ACOAnt::distanceInfluence = 2;
@@ -93,18 +93,21 @@ namespace ACOExperiments {
 					ants[pi] = new ACOAnt(map.points[pi], map.pointsLentgh);
 				}
 
+				openFile("/tmp/ACODistance.csv");
 				while (iterations--) {
 					for (unsigned int ai = 0; ai < map.pointsLentgh; ai++) {
 						ants[ai]->walk();
 					}
 					map.decayWeights();
 					std::cout << "Remaining iterations: " << iterations << "\n";
+					writeNumberToFile(map.getTraveledDistance(map.points[0]));
 				}
+				closeFile();
 
-				map.saveBestPath(map.points[0], "/tmp/data01.csv");
+				map.saveBestPath(map.points[0], "/tmp/ACOPath.csv");
 
 				openFile("/tmp/p");
-				writeCharsToFile("plot \"/tmp/data01.csv\" using 1:2:3:4 with vectors filled head lw 1\n");
+				writeCharsToFile("plot \"/tmp/ACOPath.csv\" using 1:2:3:4 with vectors filled head lw 1\n");
 				closeFile();
 				system("gnuplot -p /tmp/p");
 

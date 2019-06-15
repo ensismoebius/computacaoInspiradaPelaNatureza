@@ -14,13 +14,8 @@
  */
 
 #include "acoExperiments/Experiment01.cpp"
-#include "acoExperiments/Experiment02.cpp"
-#include "acoExperiments/Experiment03.cpp"
-#include "acoExperiments/Experiment04.cpp"
-#include "acoExperiments/Experiment05.cpp"
 
 #include "psoExperiments/Experiment01.cpp"
-#include "psoExperiments/Experiment02.cpp"
 
 #include "neuralExperiments/Experiment01.cpp"
 #include "neuralExperiments/Experiment02.cpp"
@@ -79,12 +74,11 @@ void doNeuralExperiments() {
 void doPsoExperiments() {
 	// pso experiments
 	PSOExperiments::Experiment01::perform();
-	PSOExperiments::Experiment02::perform();
 }
 
 void doAcoExperiments() {
 	// aco experiments
-	ACOExperiments::Experiment01::perform();
+	//ACOExperiments::Experiment01::perform();
 //	ACOExperiments::Experiment02::perform();
 //	ACOExperiments::Experiment03::perform();
 //	ACOExperiments::Experiment04::perform();
@@ -105,9 +99,9 @@ int main() {
 //	// neural network
 //	doNeuralExperiments();
 //	// pso experiments
-//	doPsoExperiments();
+	doPsoExperiments();
 	// aco experiments
-	doAcoExperiments();
+	//doAcoExperiments();
 
 	return 0;
 }

@@ -82,7 +82,7 @@ namespace PSOExperiments {
 				limits->addLimits(-5, 5);
 
 				PSO* pso = new PSO(fitnessFunction, amountOfPopulation, amountOfDimensions, minSpeed, maxSpeed, selfConfidence, groupConfidence, limits);
-				pso->simulate(10000, printFunction);
+				pso->simulate(500000, printFunction);
 
 				closeFile();
 

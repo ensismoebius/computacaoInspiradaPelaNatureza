@@ -49,7 +49,7 @@ namespace neuralExperiments {
 
 				// Training network
 				std::cout << "Reading training file... \n";
-				std::ifstream infileTraining("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTraining.data");
+				std::ifstream infileTraining("/home/ensismoebius/workspaces/c-workspace/CIN2019/dataSets/irisTraining.data");
 				unsigned int fileItemNumber = 0;
 				while (readFile(infileTraining, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;
@@ -85,7 +85,7 @@ namespace neuralExperiments {
 				writeCharsToFile("Validating results\n");
 
 				std::cout << "Reading validating file... \n";
-				std::ifstream infileValidating("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisValidating.data");
+				std::ifstream infileValidating("/home/ensismoebius/workspaces/c-workspace/CIN2019/dataSets/irisValidating.data");
 				fileItemNumber = 0;
 				while (readFile(infileValidating, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;
@@ -104,7 +104,7 @@ namespace neuralExperiments {
 				writeCharsToFile("Testing results\n");
 
 				std::cout << "Reading testing file... \n";
-				std::ifstream infileTesting("/home/ensis/workspaces/c-workspace/CIN2019/dataSets/irisDataSet/irisTesting.data");
+				std::ifstream infileTesting("/home/ensismoebius/workspaces/c-workspace/CIN2019/dataSets/irisTesting.data");
 				fileItemNumber = 0;
 				while (readFile(infileTesting, line, arrInput, arrDesiredOutput, fileItemNumber, outputSize, inputSize)) {
 					fileItemNumber++;

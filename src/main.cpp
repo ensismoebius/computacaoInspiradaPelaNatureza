@@ -90,16 +90,16 @@ void doAcoExperiments() {
  */
 int main() {
 
-//	// genetic algorithms
-//	doGeneticExperiments();
-//	// hill climbing algorithms
-//	doHillClimbingExperiments();
-//	// annealing algorithms
-//	doAnnealingExperiments();
-//	// neural network
-//	doNeuralExperiments();
-//	// pso experiments
-	doPsoExperiments();
+	// genetic algorithms
+	// doGeneticExperiments();
+	// hill climbing algorithms
+	// doHillClimbingExperiments();
+	// annealing algorithms
+	// doAnnealingExperiments();
+	// neural network
+	doNeuralExperiments();
+	// pso experiments
+	// doPsoExperiments();
 	// aco experiments
 	//doAcoExperiments();
 
